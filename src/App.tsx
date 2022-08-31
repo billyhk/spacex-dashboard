@@ -1,26 +1,9 @@
 import { FC, useState } from 'react'
-import DashboardHeader from './components/DashboardHeader'
-import cn from 'classnames'
+import { PageContainer, DashboardHeader } from './components/Layout'
 
-interface PageContainerProps {
-  className?: string
-  darkMode: boolean
-  children: JSX.Element
-}
+interface AppProps {}
 
-const PageContainer: FC<PageContainerProps> = ({
-  className,
-  darkMode,
-  children,
-}) => {
-  return (
-    <div className={cn('flex overflow-hidden', className, darkMode && 'dark')}>
-      {children}
-    </div>
-  )
-}
-
-function App() {
+const App: FC<AppProps> = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const toggleDarkMode: () => void = () => setDarkMode(!darkMode)
 
