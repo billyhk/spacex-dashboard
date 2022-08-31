@@ -1,15 +1,21 @@
 export interface DashboardHeaderProps {
-  header: string;
+  header: string
+  toggleDarkMode: () => void
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   header,
+  toggleDarkMode,
 }: DashboardHeaderProps) => {
   return (
-    <header className="flex py-11">
-      <h1 className="font-bold text-2xl ">{header}</h1>
+    <header className='flex justify-between py-11'>
+      <h1 className='font-bold text-2xl dark:text-white'>{header}</h1>
+      <div onClick={toggleDarkMode} className='cursor-pointer'>
+        <span className='dark:hidden'>USE DARK MODE</span>
+        <span className='hidden text-white dark:block'>USE LIGHT MODE</span>
+      </div>
     </header>
-  );
-};
+  )
+}
 
-export default DashboardHeader;
+export default DashboardHeader
