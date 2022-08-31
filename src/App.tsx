@@ -1,5 +1,9 @@
 import { FC, useState } from 'react'
 import { PageContainer, DashboardHeader } from './components/Layout'
+import launches from './datasets/launches.json'
+import detailedLaunches from './datasets/detailedLaunches.json'
+import missions from './datasets/missions.json'
+import payloadCustomers from './datasets/payloadCustomers.json'
 
 interface AppProps {}
 
