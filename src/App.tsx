@@ -13,12 +13,12 @@ const App: FC<AppProps> = () => {
 
   return (
     <PageContainer darkMode={darkMode}>
-      <div className='px-10 h-screen max-h-screen dark:bg-black-darkMode_background bg-white-lightMode_gradient w-full h-full overflow-y-auto'>
+      <main className='px-10 min-h-screen max-h-screen dark:bg-black-darkMode_background bg-white-lightMode_gradient w-full h-full overflow-y-auto'>
         <DashboardHeader
           header='SpaceX Mission Dashboard'
           toggleDarkMode={toggleDarkMode}
         />
-      </div>
+      </main>
     </PageContainer>
   )
 }
