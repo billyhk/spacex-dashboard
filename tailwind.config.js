@@ -24,6 +24,7 @@ module.exports = {
         },
         yellow: {
           DEFAULT: '#f59e0b',
+          secondary: '#B45309',
         },
         red: {
           DEFAULT: '#b91c1c',
