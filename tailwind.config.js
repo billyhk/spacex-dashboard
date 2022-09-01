@@ -19,6 +19,7 @@ module.exports = {
           secondary: '#f3f4f6',
           3: '#9ca3af',
           4: '#c4c4c4',
+          5: '#6b7280',
         },
         orange: {
           DEFAULT: '#f97316',

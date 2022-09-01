@@ -17,6 +17,7 @@ import {
   QuestionMark,
   Scale,
   Search,
+  Arrow,
 } from './components/Icons'
 
 interface AppProps {}
@@ -45,6 +46,7 @@ const App: FC<AppProps> = () => {
           <QuestionMark />
           <Scale />
           <Search />
+          <Arrow className='rotate-90 dark:-rotate-90 transition' />
         </div>
       </main>
     </PageContainer>
