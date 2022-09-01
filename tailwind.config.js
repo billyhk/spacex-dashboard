@@ -51,6 +51,9 @@ module.exports = {
           3: '#0d9488',
           4: '#2dd4bf',
         },
+        green: {
+          dark: '#1c1f37',
+        },
       },
     },
   },
