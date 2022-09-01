@@ -10,6 +10,8 @@ module.exports = {
           lightMode_gradient: 'linear-gradient(#f9fafb 74%, #f9fafb 100%)',
         },
         black: {
+          DEFAULT: '#000',
+          secondary: '#374151',
           darkMode_background: '#333333',
         },
         grey: {
@@ -35,11 +37,13 @@ module.exports = {
         blue: {
           DEFAULT: '#3b82f6',
           secondary: '#0981c3',
+          dark: '#111827',
         },
         purple: {
           DEFAULT: '#6d28d9',
           secondary: '#8b5cf6',
           3: '#818cf8',
+          4: '#4F46E5',
         },
         teal: {
           DEFAULT: '#14b8a6',

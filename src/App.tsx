@@ -5,6 +5,20 @@ import detailedLaunches from './datasets/detailedLaunches.json'
 import missions from './datasets/missions.json'
 import payloadCustomers from './datasets/payloadCustomers.json'
 
+// Remove Me
+import {
+  ArrowsExpand,
+  UserCircle,
+  Archive,
+  ChevronDown,
+  ChevronRight,
+  Cog,
+  OfficeBuilding,
+  QuestionMark,
+  Scale,
+  Search,
+} from './components/Icons'
+
 interface AppProps {}
 
 const App: FC<AppProps> = () => {
@@ -18,6 +32,20 @@ const App: FC<AppProps> = () => {
           header='SpaceX Mission Dashboard'
           toggleDarkMode={toggleDarkMode}
         />
+
+        {/* Remove Me */}
+        <div className='grid grid-cols-2 gap-y-8 w-1/2 place-items-center border dark:border-blue-dark p-4 rounded-lg shadow-lg'>
+          <Archive />
+          <ArrowsExpand />
+          <UserCircle />
+          <ChevronDown />
+          <ChevronRight />
+          <Cog />
+          <OfficeBuilding />
+          <QuestionMark />
+          <Scale />
+          <Search />
+        </div>
       </main>
     </PageContainer>
   )
