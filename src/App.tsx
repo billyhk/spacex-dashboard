@@ -22,8 +22,8 @@ import {
 import { StatisticCard } from './components/Cards'
 import { Launch, Mission, Payload, PayloadCustomer } from './interfaces'
 import {
-  getAvgPayloadMass,
   countPayloads,
+  getAvgPayloadMass,
   getPayloadsByNationality,
 } from './utils'
 
