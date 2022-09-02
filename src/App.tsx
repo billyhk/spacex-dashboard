@@ -20,8 +20,12 @@ import {
   Arrow,
 } from './components/Icons'
 import { StatisticCard } from './components/Cards'
-import { Launch, Mission, PayloadCustomer } from './interfaces'
-import { avgPayloadMassFunc, countPayloads } from './utils'
+import { Launch, Mission, Payload, PayloadCustomer } from './interfaces'
+import {
+  getAvgPayloadMass,
+  countPayloads,
+  getPayloadsByNationality,
+} from './utils'
 
 interface AppProps {}
 
@@ -43,15 +47,21 @@ const App: FC<AppProps> = () => {
   //   Launch[]
   // >(detailedLaunches.data.launches)
 
-  const avgPayloadMass = useMemo(
-    () => avgPayloadMassFunc(filteredMissions),
+  const avgPayloadMass: number = useMemo(
+    () => getAvgPayloadMass(filteredMissions),
     [filteredMissions]
   )
 
-  const totalCountMissionPayloads = useMemo(
+  const totalCountMissionPayloads: number = useMemo(
     () => countPayloads(filteredMissions),
     [filteredMissions]
   )
+  const payloadsByNationality: { [key: string]: number } = useMemo(
+    () => getPayloadsByNationality(filteredMissions),
+    [filteredMissions]
+  )
+
+  console.log({ payloadsByNationality })
 
   return (
     <PageContainer darkMode={darkMode}>
