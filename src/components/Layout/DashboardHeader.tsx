@@ -1,33 +1,7 @@
 import { useState } from 'react'
-import { Cog } from '../Icons'
+import { ChevronDown, Cog, OfficeBuilding } from '../Icons'
+import { MenuButton } from '../Button'
 import cn from 'classnames'
-
-interface ButtonProps {
-  children: JSX.Element
-  className: string
-}
-
-const Button: React.FC<ButtonProps> = ({ className, children }) => {
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
-  const toggleMenuOpen = () => setMenuOpen(!menuOpen)
-
-  return (
-    <div className='relative'>
-      <button
-        onClick={toggleMenuOpen}
-        className={cn(
-          className,
-          'border rounded-md shadow duration-100 border-none',
-          menuOpen
-            ? 'bg-blue-secondary'
-            : 'bg-white hover:bg-grey-secondary dark:bg-black-3 dark:hover:bg-grey-7'
-        )}>
-        {children}
-      </button>
-      <div className='absolute -bottom-2'></div>
-    </div>
-  )
-}
 
 interface DashboardHeaderProps {
   header: string
@@ -38,36 +12,62 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   header,
   toggleDarkMode,
 }: DashboardHeaderProps) => {
-  const [settingsMenuOpen, setSettingsMenuOpen] = useState<boolean>(false)
-  const toggleSettingsMenuOpen = () => setSettingsMenuOpen(!settingsMenuOpen)
+  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
 
-  const [launchSiteMenuOpen, setLaunchSiteMenuOpen] = useState<boolean>(false)
-  const toggleLaunchSiteMenuOpen = () =>
-    setLaunchSiteMenuOpen(!launchSiteMenuOpen)
+  const menuOptions = {
+    settings: [
+      <div className='flex flex-row justify-between gap-x-4'>
+        <p>Light / Dark Theme</p>
+        <p className='cursor-pointer' onClick={toggleDarkMode}>
+          switch
+        </p>
+      </div>,
+      <span className='cursor-pointer' onClick={() => {}}>
+        Logout
+      </span>,
+    ],
+    launchSite: [<p>Filters go here...</p>],
+  }
 
   return (
-    <header className='flex justify-between py-11'>
+    <header className='flex justify-between py-11 flex-col md:flex-row gap-y-4'>
       <h1 className='font-bold text-2xl dark:text-white'>{header}</h1>
 
-      <div className='relative'>
-        <button
-          onClick={toggleSettingsMenuOpen}
-          className={cn(
-            'border rounded-md shadow duration-100 border-none',
-            settingsMenuOpen
-              ? 'bg-blue-secondary'
-              : 'bg-white hover:bg-grey-secondary dark:bg-black-3 dark:hover:bg-grey-7',
-            'w-40px h-40px grid place-items-center'
-          )}>
-          <Cog className={cn(settingsMenuOpen && 'stroke-white')} />
-        </button>
-        {settingsMenuOpen && <div className='absolute -bottom-2'>test</div>}
-      </div>
+      <div className='flex flex-row gap-x-4'>
+        <MenuButton
+          active={menuOpen === 'settings'}
+          handleClick={() => {
+            const active = menuOpen === 'settings'
+            setMenuOpen(active ? '' : 'settings')
+          }}
+          className='w-40px grid place-items-center'
+          menuItems={menuOptions.settings}>
+          <Cog className={menuOpen === 'settings' ? 'stroke-white' : ''} />
+        </MenuButton>
 
-      {/* <div onClick={toggleDarkMode} className='cursor-pointer'>
-        <span className='dark:hidden'>USE DARK MODE</span>
-        <span className='hidden text-white dark:block'>USE LIGHT MODE</span>
-      </div> */}
+        <MenuButton
+          active={menuOpen === 'launch_site'}
+          handleClick={() => {
+            const active = menuOpen === 'launch_site'
+            setMenuOpen(active ? '' : 'launch_site')
+          }}
+          menuItems={menuOptions.launchSite}>
+          <div className='flex justify-between px-4 gap-x-10'>
+            <span className='flex gap-x-2'>
+              <OfficeBuilding
+                className={menuOpen === 'launch_site' ? 'stroke-white' : ''}
+              />
+              Launch Site
+            </span>
+            <ChevronDown
+              className={cn(
+                'transition-transform',
+                menuOpen === 'launch_site' ? 'rotate-180 fill-white' : ''
+              )}
+            />
+          </div>
+        </MenuButton>
+      </div>
     </header>
   )
 }
