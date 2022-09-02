@@ -7,7 +7,7 @@ export const ArrowsExpand = (props: React.SVGProps<SVGSVGElement>) => (
     viewBox='0 0 982 981'
     fill='none'
     {...props}
-    className={cn('dark:fill-white fill-blue', props.className)}>
+    className={cn(props.className, 'dark:fill-white fill-blue')}>
     <g
       transform='translate(0.000000,981.000000) scale(0.100000,-0.100000)'
       stroke='none'>

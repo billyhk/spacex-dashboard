@@ -7,7 +7,7 @@ export const Arrow = (props: React.SVGProps<SVGSVGElement>) => (
     viewBox='0 0 400 400'
     fill='none'
     {...props}
-    className={cn('dark:fill-white fill-grey-5 transform', props.className)}>
+    className={cn(props.className, 'dark:fill-white fill-grey-5 transform')}>
     <g
       transform='translate(0.000000,400.000000) scale(0.100000,-0.100000)'
       stroke='none'>
