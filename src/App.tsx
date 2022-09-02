@@ -19,6 +19,7 @@ import {
   Search,
   Arrow,
 } from './components/Icons'
+import { StatisticCard } from './components/Cards'
 
 interface AppProps {}
 
@@ -35,8 +36,38 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
+        {/* Pie Chart {Title Card) */}
+        
+        {/* Stat Cards */}
+        <div className='flex flex-col justify-between gap-y-1 w-1/2'>
+          {[
+            {
+              label: 'Total Payloads',
+              value: '310',
+              Icon: () => <Archive />,
+              linkTo: '/',
+            },
+            {
+              label: 'Avg. Payload Mass',
+              value: '2120',
+              Icon: () => <Scale />,
+              linkTo: '/',
+            },
+            {
+              label: 'Total Payload Customers',
+              value: '43',
+              Icon: () => <UserCircle />,
+              linkTo: '/',
+            },
+          ].map((data) => {
+            return <StatisticCard {...data} />
+          })}
+        </div>
+
+        {/* Table (Title Card) */}
+
         {/* Remove Me */}
-        <div className='grid grid-cols-2 gap-y-8 w-1/2 place-items-center border dark:border-blue-dark p-4 rounded-lg shadow-lg'>
+        <div className='grid grid-cols-2 gap-y-8 w-1/2 place-items-center border dark:border-blue-dark p-4 rounded-lg shadow-lg border-none'>
           <Archive />
           <ArrowsExpand />
           <UserCircle />

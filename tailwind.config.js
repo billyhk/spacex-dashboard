@@ -14,6 +14,7 @@ module.exports = {
           secondary: '#374151',
           3: '#3b3b3c',
           4: '#333333',
+          5: '#2d2d2d',
         },
         grey: {
           DEFAULT: '#f9fafb',
@@ -23,7 +24,7 @@ module.exports = {
           5: '#6b7280',
           6: '#999999',
           7: '#555555',
-          8: '#e5e7eb'
+          8: '#e5e7eb',
         },
         orange: {
           DEFAULT: '#f97316',
@@ -58,6 +59,7 @@ module.exports = {
         },
         green: {
           dark: '#1c1f37',
+          dark_opaque: 'rgba(28, 31, 55, 0.58)',
           dark_secondary: '#242424',
         },
       },
@@ -97,6 +99,7 @@ module.exports = {
       },
       fontSize: {
         '10px': '10px',
+        '20px': '20px',
       },
       boxShadow: {
         button: '0 1px 2px 0 #000000',
