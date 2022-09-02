@@ -32,6 +32,7 @@ const App: FC<AppProps> = () => {
         <DashboardHeader
           header='SpaceX Mission Dashboard'
           toggleDarkMode={toggleDarkMode}
+          darkMode={darkMode}
         />
 
         {/* Remove Me */}

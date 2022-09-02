@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { ChevronDown, Cog, OfficeBuilding } from '../Icons'
 import { MenuButton } from '../Button'
+import { Switch } from '../Inputs'
 import cn from 'classnames'
 
 interface DashboardHeaderProps {
   header: string
   toggleDarkMode: () => void
+  darkMode: boolean
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   header,
   toggleDarkMode,
+  darkMode
 }: DashboardHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
 
@@ -18,9 +21,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     settings: [
       <div className='flex flex-row justify-between gap-x-4'>
         <p>Light / Dark Theme</p>
-        <p className='cursor-pointer' onClick={toggleDarkMode}>
-          switch
-        </p>
+        <Switch handleClick={toggleDarkMode} text='' active={darkMode}/>
       </div>,
       <span className='cursor-pointer' onClick={() => {}}>
         Logout
