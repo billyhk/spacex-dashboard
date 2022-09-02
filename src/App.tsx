@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { PageContainer, DashboardHeader } from './components/Layout'
 import launches from './datasets/launches.json'
 import detailedLaunches from './datasets/detailedLaunches.json'
@@ -43,16 +43,14 @@ const App: FC<AppProps> = () => {
   //   Launch[]
   // >(detailedLaunches.data.launches)
 
-  const getAvgPayloadMass = useCallback(avgPayloadMassFunc, [])
   const avgPayloadMass = useMemo(
-    () => getAvgPayloadMass(filteredMissions),
-    [getAvgPayloadMass, filteredMissions]
+    () => avgPayloadMassFunc(filteredMissions),
+    [filteredMissions]
   )
 
-  const getTotalCountMissionPayloads = useCallback(countPayloads, [])
   const totalCountMissionPayloads = useMemo(
-    () => getTotalCountMissionPayloads(filteredMissions),
-    [getTotalCountMissionPayloads, filteredMissions]
+    () => countPayloads(filteredMissions),
+    [filteredMissions]
   )
 
   return (
@@ -95,7 +93,7 @@ const App: FC<AppProps> = () => {
         {/* Table (Title Card) */}
 
         {/* Remove Me */}
-        <div className='grid grid-cols-2 gap-y-8 w-1/2 place-items-center border dark:border-blue-dark p-4 rounded-lg shadow-lg border-none'>
+        {/* <div className='grid grid-cols-2 gap-y-8 w-1/2 place-items-center border dark:border-blue-dark p-4 rounded-lg shadow-lg border-none'>
           <Archive />
           <ArrowsExpand />
           <UserCircle />
@@ -107,7 +105,7 @@ const App: FC<AppProps> = () => {
           <Scale />
           <Search />
           <Arrow className='rotate-90 dark:-rotate-90 transition' />
-        </div>
+        </div> */}
       </main>
     </PageContainer>
   )
