@@ -31,6 +31,7 @@ import { StatCardProps } from './components/Cards/StatisticCard'
 interface AppProps {}
 
 const App: FC<AppProps> = () => {
+  const statCardId = useId()
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const toggleDarkMode: () => void = () => setDarkMode(!darkMode)
   const [filteredPayloadCustomers, setFilteredPayloadCustomers] = useState<
@@ -59,8 +60,6 @@ const App: FC<AppProps> = () => {
   //   Launch[]
   // >(detailedLaunches.data.launches)
 
-  const statCardId = useId()
-
   console.log({ payloadsByNationality })
 
   return (
@@ -72,32 +71,36 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
-        {/* Pie Chart {Title Card) */}
+        <div className='flex flex-col md:flex-row gap-y-2'>
+          
+          {/* Pie Chart {Title Card) */}
+          <div className='w-full md:w-1/2'>TEST</div>
 
-        {/* Stat Cards */}
-        <div className='flex flex-col justify-between gap-y-1 w-1/2'>
-          {[
-            {
-              label: 'Total Payloads',
-              value: totalCountMissionPayloads,
-              Icon: () => <Archive />,
-              linkTo: '/',
-            },
-            {
-              label: 'Avg. Payload Mass',
-              value: `${avgPayloadMass.toFixed(0)} kg`,
-              Icon: () => <Scale />,
-              linkTo: '/',
-            },
-            {
-              label: 'Total Payload Customers',
-              value: filteredPayloadCustomers.length,
-              Icon: () => <UserCircle />,
-              linkTo: '/',
-            },
-          ].map((data: StatCardProps, i) => {
-            return <StatisticCard {...data} key={`${statCardId}-${i}`} />
-          })}
+          {/* Stat Cards */}
+          <div className='flex flex-col justify-between gap-y-1 w-full md:w-1/2'>
+            {[
+              {
+                label: 'Total Payloads',
+                value: totalCountMissionPayloads,
+                Icon: () => <Archive />,
+                linkTo: '/',
+              },
+              {
+                label: 'Avg. Payload Mass',
+                value: `${avgPayloadMass.toFixed(0)} kg`,
+                Icon: () => <Scale />,
+                linkTo: '/',
+              },
+              {
+                label: 'Total Payload Customers',
+                value: filteredPayloadCustomers.length,
+                Icon: () => <UserCircle />,
+                linkTo: '/',
+              },
+            ].map((data: StatCardProps, i) => {
+              return <StatisticCard {...data} key={`${statCardId}-${i}`} />
+            })}
+          </div>
         </div>
 
         {/* Table (Title Card) */}
