@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-interface StatCardProps {
+export interface StatCardProps {
   label: string
   value: number | string
   Icon: () => JSX.Element

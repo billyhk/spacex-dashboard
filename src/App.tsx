@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC, useMemo, useState, useId } from 'react'
 import { PageContainer, DashboardHeader } from './components/Layout'
 import launches from './datasets/launches.json'
 import detailedLaunches from './datasets/detailedLaunches.json'
@@ -26,6 +26,7 @@ import {
   getAvgPayloadMass,
   getPayloadsByNationality,
 } from './utils'
+import { StatCardProps } from './components/Cards/StatisticCard'
 
 interface AppProps {}
 
@@ -38,20 +39,10 @@ const App: FC<AppProps> = () => {
   const [filteredMissions, setFilteredMissions] = useState<Mission[]>(
     missions.data.missions
   )
-
-  // -- NOT USED YET --
-  // const [filteredLaunches, setFilteredLaunches] = useState<Launch[]>(
-  //   launches.data.launches
-  // )
-  // const [filteredDetailedLaunches, setFilteredDetailedLaunches] = useState<
-  //   Launch[]
-  // >(detailedLaunches.data.launches)
-
   const avgPayloadMass: number = useMemo(
     () => getAvgPayloadMass(filteredMissions),
     [filteredMissions]
   )
-
   const totalCountMissionPayloads: number = useMemo(
     () => countPayloads(filteredMissions),
     [filteredMissions]
@@ -60,6 +51,15 @@ const App: FC<AppProps> = () => {
     () => getPayloadsByNationality(filteredMissions),
     [filteredMissions]
   )
+  // -- NOT USED YET --
+  // const [filteredLaunches, setFilteredLaunches] = useState<Launch[]>(
+  //   launches.data.launches
+  // )
+  // const [filteredDetailedLaunches, setFilteredDetailedLaunches] = useState<
+  //   Launch[]
+  // >(detailedLaunches.data.launches)
+
+  const statCardId = useId()
 
   console.log({ payloadsByNationality })
 
@@ -95,8 +95,8 @@ const App: FC<AppProps> = () => {
               Icon: () => <UserCircle />,
               linkTo: '/',
             },
-          ].map((data) => {
-            return <StatisticCard {...data} />
+          ].map((data: StatCardProps, i) => {
+            return <StatisticCard {...data} key={`${statCardId}-${i}`} />
           })}
         </div>
 
