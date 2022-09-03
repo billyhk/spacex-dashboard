@@ -60,7 +60,18 @@ const App: FC<AppProps> = () => {
   )
 
   const payloadsByNationality: MappedPayload[] = useMemo(
-    () => getPayloadsByNationality(filteredMissions).slice(0, 5),
+    () =>
+      getPayloadsByNationality(filteredMissions)
+        .sort((a, b) => {
+          if (a.count > b.count) {
+            return -1
+          }
+          if (a.count < b.count) {
+            return 1
+          }
+          return 0
+        })
+        .slice(0, 5),
     [filteredMissions]
   )
 
@@ -101,7 +112,6 @@ const App: FC<AppProps> = () => {
   }
 
   const [activeIndex, setActiveIndex] = useState<number>(-1)
-
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full h-full overflow-y-auto transition-colors'>
