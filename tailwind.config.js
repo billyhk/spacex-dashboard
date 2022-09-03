@@ -15,6 +15,7 @@ module.exports = {
           3: '#3b3b3c',
           4: '#333333',
           5: '#2d2d2d',
+          6: '#303030',
         },
         grey: {
           DEFAULT: '#f9fafb',
@@ -105,7 +106,8 @@ module.exports = {
       },
       boxShadow: {
         button: '0 1px 2px 0 #000000',
-        bottom: ' 0px 10px 10px -15px #111',
+        bottom: ' 0px 10px 15px -15px #111',
+        bottom_darkMode: ' 0px 10px 15px -15px #fff',
       },
       keyframes: {
         fadein_drop: {

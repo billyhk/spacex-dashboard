@@ -123,9 +123,9 @@ const App: FC<AppProps> = () => {
 
         <div className='flex flex-col lg:flex-row gap-2'>
           {/* Pie Chart {Title Card) */}
-          <div className='flex w-full lg:w-1/2'>
-            <div className='border rounded-lg shadow-lg overflow-hidden w-full'>
-              <h2 className='p-4 w-full border-b text-lg text-green-dark font-bold flex items-center'>
+          <div className='w-full lg:w-1/2'>
+            <div className='border rounded-lg shadow-lg overflow-hidden w-full dark:bg-black-3 border-0'>
+              <h2 className='p-4 w-full border-b-4 border-grey-primary dark:border-black-4 text-lg text-green-dark dark:text-white font-bold flex items-center transition-colors duration-25'>
                 Payload Count By Nationality{' '}
                 <span className='ml-2 cursor-pointer' title='Help'>
                   <QuestionMark />
@@ -165,14 +165,14 @@ const App: FC<AppProps> = () => {
                   </PieChart>
                 </div>
                 <div className='flex-1 flex flex-col w-full'>
-                  <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 font-bold mb-4'>
+                  <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
                     <span>NATIONALITY</span>
                     <span>PAYLOAD COUNT</span>
                   </div>
                   {payloadsByNationality.map(({ country, count }, i) => {
                     return (
                       <div
-                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 hover:border-grey-4 hover:shadow-bottom transition'
+                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
                         onMouseEnter={() => setActiveIndex(i)}
                         onMouseLeave={() => setActiveIndex(-1)}>
                         <div className='flex flex-row gap-x-2 items-center'>
@@ -181,9 +181,13 @@ const App: FC<AppProps> = () => {
                               background: COLORS[i % COLORS.length],
                             }}
                             className='w-6px h-6px rounded-full'></span>
-                          <span className='text-green-dark'>{country}</span>
+                          <span className='text-green-dark dark:text-grey-6'>
+                            {country}
+                          </span>
                         </div>
-                        <span className='text-grey-3'>{count}</span>
+                        <span className='text-grey-3 dark:text-grey-6'>
+                          {count}
+                        </span>
                       </div>
                     )
                   })}
