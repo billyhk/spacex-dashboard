@@ -105,6 +105,7 @@ module.exports = {
       },
       boxShadow: {
         button: '0 1px 2px 0 #000000',
+        bottom: ' 0px 10px 10px -15px #111',
       },
       keyframes: {
         fadein_drop: {

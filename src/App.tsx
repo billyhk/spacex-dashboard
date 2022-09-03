@@ -162,7 +162,7 @@ const App: FC<AppProps> = () => {
                   {payloadsByNationality.map(({ country, count }, i) => {
                     return (
                       <div
-                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 cursor-default hover:border-b-2 hover:border-grey-4'
+                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 hover:border-grey-4 hover:shadow-bottom transition'
                         onMouseEnter={() => setActiveIndex(i)}
                         onMouseLeave={() => setActiveIndex(-1)}>
                         <div className='flex flex-row gap-x-2 items-center'>
