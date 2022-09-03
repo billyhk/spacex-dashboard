@@ -15,6 +15,7 @@ module.exports = {
           3: '#3b3b3c',
           4: '#333333',
           5: '#2d2d2d',
+          6: '#303030',
         },
         grey: {
           DEFAULT: '#f9fafb',
@@ -25,6 +26,7 @@ module.exports = {
           6: '#999999',
           7: '#555555',
           8: '#e5e7eb',
+          9: '#f1f2fa',
         },
         orange: {
           DEFAULT: '#f97316',
@@ -65,6 +67,7 @@ module.exports = {
       },
       spacing: {
         '1px': '1px',
+        '6px': '6px',
         '8px': '8px',
         '9px': '9px',
         '10px': '10px',
@@ -103,6 +106,10 @@ module.exports = {
       },
       boxShadow: {
         button: '0 1px 2px 0 #000000',
+        bottom: ' 0px 10px 15px -15px #111',
+        bottom_darkMode: '0px 10px 15px -15px #fff',
+        title_card: '0 5px 10px 0 #f1f2fa',
+        title_card_darkMode: '0 5px 10px 0 #303030',
       },
       keyframes: {
         fadein_drop: {

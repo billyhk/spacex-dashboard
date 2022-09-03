@@ -34,7 +34,7 @@ const MenuButton: React.FC<ButtonProps> = ({
       {active && (
         <div
           className={cn(
-            'absolute top-12 whitespace-nowrap text-sm md:right-0 text-grey-5 dark:text-grey-6 rounded-md shadow-lg bg-white dark:bg-green-dark_secondary overflow-hidden',
+            'z-50 absolute top-12 whitespace-nowrap text-sm md:right-0 text-grey-5 dark:text-grey-6 rounded-md shadow-lg bg-white dark:bg-green-dark_secondary overflow-hidden',
             'animate-fadein_drop'
           )}>
           {menuItems?.map((el, i) => (
