@@ -28,7 +28,15 @@ import {
   MappedPayload,
 } from './utils'
 import { StatCardProps } from './components/Cards/StatisticCard'
-import { Cell, Pie, PieChart } from 'recharts'
+import {
+  Cell,
+  LabelList,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+} from 'recharts'
 
 interface AppProps {}
 
@@ -65,7 +73,33 @@ const App: FC<AppProps> = () => {
   // >(detailedLaunches.data.launches)
 
   const COLORS = ['#f97316', '#b91c1c', '#14b8a6', '#3b82f6', '#6d28d9']
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className='bg-blue-dark h-40px px-4 flex items-center justify-between gap-x-2 text-xs rounded-md shadow-md relative border-none'>
+          <div className='flex flex-row gap-x-1 items-center'>
+            <span
+              style={{
+                background: payload[0].payload.fill,
+              }}
+              className='w-10px h-10px rounded-full'></span>
+            <span className='text-grey-3 font-bold'>
+              {payload[0].payload.country}
+            </span>
+          </div>
+          <span className='text-white font-bold'>
+            {payload[0].payload.count}
+          </span>
 
+          <div className='absolute w-full left-0 -bottom-1 flex justify-center'>
+            <div className='rotate-45 bg-blue-dark w-2 h-2'></div>
+          </div>
+        </div>
+      )
+    }
+
+    return null
+  }
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full h-full overflow-y-auto transition-colors'>
@@ -85,7 +119,7 @@ const App: FC<AppProps> = () => {
                     data={payloadsByNationality}
                     cx={100}
                     cy={80}
-                    innerRadius={75}
+                    innerRadius={5}
                     outerRadius={80}
                     paddingAngle={4}
                     dataKey='count'>
@@ -96,9 +130,10 @@ const App: FC<AppProps> = () => {
                       />
                     ))}
                   </Pie>
+                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
               </div>
-              <div className='flex-1 border border-black'>TABLE DATA HERE</div>
+              <div className='flex-1 border border-black'>TABLE</div>
             </div>
           </div>
 
