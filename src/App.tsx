@@ -139,8 +139,8 @@ const App: FC<AppProps> = () => {
           {/* Table */}
           <TitleCard
             className={cn(
-              'w-full left-0 absolute transition-top duration-700',
-              tableCardExpanded ? 'top-0' : 'top-full'
+              'w-full mt-4 left-0 absolute transition-top duration-700',
+              tableCardExpanded ? '-top-4' : 'top-full'
             )}
             title={
               <div className='w-full flex justify-between items-center'>
