@@ -60,7 +60,7 @@ const App: FC<AppProps> = () => {
   )
 
   const payloadsByNationality: MappedPayload[] = useMemo(
-    () => getPayloadsByNationality(filteredMissions).slice(0, 4),
+    () => getPayloadsByNationality(filteredMissions).slice(0, 5),
     [filteredMissions]
   )
 
@@ -111,43 +111,74 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
-        <div className='flex flex-col lg:flex-row gap-y-2'>
+        <div className='flex flex-col lg:flex-row gap-2'>
           {/* Pie Chart {Title Card) */}
           <div className='flex w-full lg:w-1/2'>
-            <div className='flex-1 flex flex-col lg:flex-row'>
-              <div className='h-full w-60 grid place-items-center'>
-                <PieChart width={225} height={175}>
-                  <Pie
-                    data={payloadsByNationality}
-                    cx={100}
-                    cy={80}
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey='count'>
-                    {payloadsByNationality.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                        stroke={COLORS[index % COLORS.length]}
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        onMouseEnter={() => setActiveIndex(index)}
-                        onMouseLeave={() => setActiveIndex(-1)}
-                        style={{
-                          ...(index === activeIndex && {
-                            filter: `drop-shadow(0 0 4px ${
-                              COLORS[index % COLORS.length]
-                            }`,
-                          }),
-                        }}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
+            <div className='border rounded-lg shadow-lg overflow-hidden w-full'>
+              <h2 className='p-4 w-full border-b text-lg text-green-dark font-bold flex items-center'>
+                Payload Count By Nationality{' '}
+                <span className='ml-2 cursor-pointer' title='Help'>
+                  <QuestionMark />
+                </span>
+              </h2>
+              <div className='p-4 flex-1 flex flex-col md:flex-row gap-y-8 items-center'>
+                <div className='h-full w-52 grid place-items-center'>
+                  <PieChart width={225} height={175}>
+                    <Pie
+                      data={payloadsByNationality}
+                      cx={100}
+                      cy={80}
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey='count'>
+                      {payloadsByNationality.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                          stroke={COLORS[index % COLORS.length]}
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          onMouseEnter={() => setActiveIndex(index)}
+                          onMouseLeave={() => setActiveIndex(-1)}
+                          style={{
+                            ...(index === activeIndex && {
+                              filter: `drop-shadow(0 0 4px ${
+                                COLORS[index % COLORS.length]
+                              }`,
+                            }),
+                          }}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </div>
+                <div className='flex-1 flex flex-col w-full'>
+                  <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 font-bold mb-4'>
+                    <span>NATIONALITY</span>
+                    <span>PAYLOAD COUNT</span>
+                  </div>
+                  {payloadsByNationality.map(({ country, count }, i) => {
+                    return (
+                      <div
+                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 cursor-default hover:border-b-2 hover:border-grey-4'
+                        onMouseEnter={() => setActiveIndex(i)}
+                        onMouseLeave={() => setActiveIndex(-1)}>
+                        <div className='flex flex-row gap-x-2 items-center'>
+                          <span
+                            style={{
+                              background: COLORS[i % COLORS.length],
+                            }}
+                            className='w-6px h-6px rounded-full'></span>
+                          <span className='text-green-dark'>{country}</span>
+                        </div>
+                        <span className='text-grey-3'>{count}</span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-              <div className='flex-1 border border-black'>TABLE</div>
             </div>
           </div>
 

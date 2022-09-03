@@ -25,6 +25,7 @@ module.exports = {
           6: '#999999',
           7: '#555555',
           8: '#e5e7eb',
+          9: '#f1f2fa',
         },
         orange: {
           DEFAULT: '#f97316',
@@ -65,6 +66,7 @@ module.exports = {
       },
       spacing: {
         '1px': '1px',
+        '6px': '6px',
         '8px': '8px',
         '9px': '9px',
         '10px': '10px',
