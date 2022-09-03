@@ -121,11 +121,11 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
-        <div className='flex flex-col lg:flex-row gap-2'>
+        <div className='flex flex-col lg:flex-row gap-4'>
           {/* Pie Chart {Title Card) */}
           <div className='w-full lg:w-1/2'>
-            <div className='border rounded-lg shadow-lg overflow-hidden w-full dark:bg-black-3 border-0'>
-              <h2 className='p-4 w-full border-b-4 border-grey-primary dark:border-black-4 text-lg text-green-dark dark:text-white font-bold flex items-center transition-colors duration-25'>
+            <div className='border rounded-lg shadow-title_card dark:shadow-title_card_darkMode overflow-hidden w-full dark:bg-black-3 border-0'>
+              <h2 className='p-4 w-full border-b-4 border-grey-secondary dark:border-black-4 text-lg text-green-dark dark:text-white font-bold flex items-center transition-colors duration-25'>
                 Payload Count By Nationality{' '}
                 <span className='ml-2 cursor-pointer' title='Help'>
                   <QuestionMark />
@@ -172,7 +172,7 @@ const App: FC<AppProps> = () => {
                   {payloadsByNationality.map(({ country, count }, i) => {
                     return (
                       <div
-                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
+                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
                         onMouseEnter={() => setActiveIndex(i)}
                         onMouseLeave={() => setActiveIndex(-1)}>
                         <div className='flex flex-row gap-x-2 items-center'>
