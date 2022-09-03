@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useId } from 'react'
+import { FC, useMemo, useState, useId, Fragment } from 'react'
 import { PageContainer, DashboardHeader } from './components/Layout'
 import launches from './datasets/launches.json'
 import detailedLaunches from './datasets/detailedLaunches.json'
@@ -19,7 +19,7 @@ import {
   Search,
   Arrow,
 } from './components/Icons'
-import { StatisticCard } from './components/Cards'
+import { StatisticCard, TitleCard } from './components/Cards'
 import { Launch, Mission, Payload, PayloadCustomer } from './interfaces'
 import {
   countPayloads,
@@ -28,15 +28,7 @@ import {
   MappedPayload,
 } from './utils'
 import { StatCardProps } from './components/Cards/StatisticCard'
-import {
-  Cell,
-  LabelList,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  TooltipProps,
-} from 'recharts'
+import { Cell, Pie, PieChart, Tooltip } from 'recharts'
 
 interface AppProps {}
 
@@ -58,7 +50,6 @@ const App: FC<AppProps> = () => {
     () => countPayloads(filteredMissions),
     [filteredMissions]
   )
-
   const payloadsByNationality: MappedPayload[] = useMemo(
     () =>
       getPayloadsByNationality(filteredMissions)
@@ -123,78 +114,79 @@ const App: FC<AppProps> = () => {
 
         <div className='flex flex-col lg:flex-row gap-4'>
           {/* Pie Chart {Title Card) */}
-          <div className='w-full lg:w-1/2'>
-            <div className='border rounded-lg shadow-title_card dark:shadow-title_card_darkMode overflow-hidden w-full dark:bg-black-3 border-0'>
-              <h2 className='p-4 w-full border-b-4 border-grey-secondary dark:border-black-4 text-lg text-green-dark dark:text-white font-bold flex items-center transition-colors duration-25'>
+          <TitleCard
+            className='w-full lg:w-1/2'
+            title={
+              <Fragment>
                 Payload Count By Nationality{' '}
                 <span className='ml-2 cursor-pointer' title='Help'>
                   <QuestionMark />
                 </span>
-              </h2>
-              <div className='p-4 flex-1 flex flex-col md:flex-row gap-y-8 items-center'>
-                <div className='h-full w-52 grid place-items-center'>
-                  <PieChart width={225} height={175}>
-                    <Pie
-                      data={payloadsByNationality}
-                      cx={100}
-                      cy={80}
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey='count'>
-                      {payloadsByNationality.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                          stroke={COLORS[index % COLORS.length]}
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          onMouseEnter={() => setActiveIndex(index)}
-                          onMouseLeave={() => setActiveIndex(-1)}
-                          style={{
-                            ...(index === activeIndex && {
-                              filter: `drop-shadow(0 0 4px ${
-                                COLORS[index % COLORS.length]
-                              }`,
-                            }),
-                          }}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
+              </Fragment>
+            }>
+            <div className='flex flex-col md:flex-row gap-y-8 items-center'>
+              <div className='h-full w-52 grid place-items-center'>
+                <PieChart width={225} height={175}>
+                  <Pie
+                    data={payloadsByNationality}
+                    cx={100}
+                    cy={80}
+                    innerRadius={75}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey='count'>
+                    {payloadsByNationality.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                        stroke={COLORS[index % COLORS.length]}
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onMouseLeave={() => setActiveIndex(-1)}
+                        style={{
+                          ...(index === activeIndex && {
+                            filter: `drop-shadow(0 0 4px ${
+                              COLORS[index % COLORS.length]
+                            }`,
+                          }),
+                        }}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </div>
+              <div className='flex-1 flex flex-col w-full'>
+                <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
+                  <span>NATIONALITY</span>
+                  <span>PAYLOAD COUNT</span>
                 </div>
-                <div className='flex-1 flex flex-col w-full'>
-                  <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
-                    <span>NATIONALITY</span>
-                    <span>PAYLOAD COUNT</span>
-                  </div>
-                  {payloadsByNationality.map(({ country, count }, i) => {
-                    return (
-                      <div
-                        className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
-                        onMouseEnter={() => setActiveIndex(i)}
-                        onMouseLeave={() => setActiveIndex(-1)}>
-                        <div className='flex flex-row gap-x-2 items-center'>
-                          <span
-                            style={{
-                              background: COLORS[i % COLORS.length],
-                            }}
-                            className='w-6px h-6px rounded-full'></span>
-                          <span className='text-green-dark dark:text-grey-6'>
-                            {country}
-                          </span>
-                        </div>
-                        <span className='text-grey-3 dark:text-grey-6'>
-                          {count}
+                {payloadsByNationality.map(({ country, count }, i) => {
+                  return (
+                    <div
+                      className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
+                      onMouseEnter={() => setActiveIndex(i)}
+                      onMouseLeave={() => setActiveIndex(-1)}>
+                      <div className='flex flex-row gap-x-2 items-center'>
+                        <span
+                          style={{
+                            background: COLORS[i % COLORS.length],
+                          }}
+                          className='w-6px h-6px rounded-full'></span>
+                        <span className='text-green-dark dark:text-grey-6'>
+                          {country}
                         </span>
                       </div>
-                    )
-                  })}
-                </div>
+                      <span className='text-grey-3 dark:text-grey-6'>
+                        {count}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
-          </div>
+          </TitleCard>
 
           {/* Stat Cards */}
           <div className='flex flex-col justify-between gap-y-1 w-full lg:w-1/2'>
