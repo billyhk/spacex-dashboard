@@ -97,9 +97,11 @@ const App: FC<AppProps> = () => {
         </div>
       )
     }
-
     return null
   }
+
+  const [activeIndex, setActiveIndex] = useState<number>(-1)
+
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full h-full overflow-y-auto transition-colors'>
@@ -114,19 +116,31 @@ const App: FC<AppProps> = () => {
           <div className='flex w-full lg:w-1/2'>
             <div className='flex-1 flex flex-col lg:flex-row'>
               <div className='h-full w-60 grid place-items-center'>
-                <PieChart width={225} height={175} className=''>
+                <PieChart width={225} height={175}>
                   <Pie
                     data={payloadsByNationality}
                     cx={100}
                     cy={80}
-                    innerRadius={5}
+                    innerRadius={50}
                     outerRadius={80}
-                    paddingAngle={4}
+                    paddingAngle={5}
                     dataKey='count'>
                     {payloadsByNationality.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
+                        stroke={COLORS[index % COLORS.length]}
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onMouseLeave={() => setActiveIndex(-1)}
+                        style={{
+                          ...(index === activeIndex && {
+                            filter: `drop-shadow(0 0 4px ${
+                              COLORS[index % COLORS.length]
+                            }`,
+                          }),
+                        }}
                       />
                     ))}
                   </Pie>
