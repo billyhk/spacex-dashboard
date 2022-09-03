@@ -25,8 +25,10 @@ import {
   countPayloads,
   getAvgPayloadMass,
   getPayloadsByNationality,
+  MappedPayload,
 } from './utils'
 import { StatCardProps } from './components/Cards/StatisticCard'
+import { Cell, Pie, PieChart } from 'recharts'
 
 interface AppProps {}
 
@@ -48,10 +50,12 @@ const App: FC<AppProps> = () => {
     () => countPayloads(filteredMissions),
     [filteredMissions]
   )
-  const payloadsByNationality: { [key: string]: number } = useMemo(
-    () => getPayloadsByNationality(filteredMissions),
+
+  const payloadsByNationality: MappedPayload[] = useMemo(
+    () => getPayloadsByNationality(filteredMissions).slice(0, 4),
     [filteredMissions]
   )
+
   // -- NOT USED YET --
   // const [filteredLaunches, setFilteredLaunches] = useState<Launch[]>(
   //   launches.data.launches
@@ -60,7 +64,7 @@ const App: FC<AppProps> = () => {
   //   Launch[]
   // >(detailedLaunches.data.launches)
 
-  console.log({ payloadsByNationality })
+  const COLORS = ['#f97316', '#b91c1c', '#14b8a6', '#3b82f6', '#6d28d9']
 
   return (
     <PageContainer darkMode={darkMode}>
@@ -71,13 +75,35 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
-        <div className='flex flex-col md:flex-row gap-y-2'>
-          
+        <div className='flex flex-col lg:flex-row gap-y-2'>
           {/* Pie Chart {Title Card) */}
-          <div className='w-full md:w-1/2'>TEST</div>
+          <div className='flex w-full lg:w-1/2'>
+            <div className='flex-1 flex flex-col lg:flex-row'>
+              <div className='h-full w-60 grid place-items-center'>
+                <PieChart width={225} height={175} className=''>
+                  <Pie
+                    data={payloadsByNationality}
+                    cx={100}
+                    cy={80}
+                    innerRadius={75}
+                    outerRadius={80}
+                    paddingAngle={4}
+                    dataKey='count'>
+                    {payloadsByNationality.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </div>
+              <div className='flex-1 border border-black'>TABLE DATA HERE</div>
+            </div>
+          </div>
 
           {/* Stat Cards */}
-          <div className='flex flex-col justify-between gap-y-1 w-full md:w-1/2'>
+          <div className='flex flex-col justify-between gap-y-1 w-full lg:w-1/2'>
             {[
               {
                 label: 'Total Payloads',
