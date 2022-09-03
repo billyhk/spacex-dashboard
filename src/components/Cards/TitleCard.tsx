@@ -3,7 +3,7 @@ import { FC } from 'react'
 interface TitleCardProps {
   title: JSX.Element | string
   children: JSX.Element
-  className: string
+  className?: string
 }
 
 const TitleCard: FC<TitleCardProps> = ({ title, children, className }) => {

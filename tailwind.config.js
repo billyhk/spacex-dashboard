@@ -125,6 +125,9 @@ module.exports = {
         fadein_drop: 'fadein_drop 0.25s linear',
         fadeout_rise: 'fadeout_rise 0.25s linear',
       },
+      transitionProperty: {
+        top: 'top',
+      },
     },
   },
   plugins: [],
