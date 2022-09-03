@@ -26,23 +26,23 @@ const PieChart: FC<PieChartProps<MappedPayload>> = ({
         data={data}
         cx={80}
         cy={80}
-        innerRadius={70}
+        innerRadius={74}
         outerRadius={80}
-        paddingAngle={5}
-        dataKey={dataKey}>
+        paddingAngle={4}
+        cornerRadius={100}
+        dataKey={dataKey}
+        >
         {data.map((entry, index: number) => (
           <Cell
             key={`cell-${index}`}
             fill={colors[index % colors.length]}
             stroke={colors[index % colors.length]}
-            strokeLinecap='round'
-            strokeLinejoin='round'
             {...(setActiveIndex && {
               onMouseEnter: () => setActiveIndex(index),
               onMouseLeave: () => setActiveIndex(-1),
               style: {
                 ...(index === activeIndex && {
-                  filter: `drop-shadow(0 0 4px ${
+                  filter: `drop-shadow(0 0 3px ${
                     colors[index % colors.length]
                   }`,
                 }),
