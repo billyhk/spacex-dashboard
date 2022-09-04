@@ -26,6 +26,7 @@ import {
   getFacetedUniqueValues,
   Table,
   Column,
+  ColumnFilter,
 } from '@tanstack/react-table'
 import {
   RankingInfo,
@@ -40,6 +41,8 @@ import {
   DetailedLaunchRow,
 } from '../../interfaces'
 import cn from 'classnames'
+import { TableFilter } from '../../App'
+import Filter from './Filter'
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -54,88 +57,16 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-// A debounced input react component
-function DebouncedInput({
-  value: initialValue,
-  onChange,
-  debounce = 500,
-  ...props
-}: {
-  value: string | number
-  onChange: (value: string | number) => void
-  debounce?: number
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-  }, [value])
-
-  return (
-    <input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  )
-}
-
-function Filter({
-  column,
-  table,
-}: {
-  column: Column<any, unknown>
-  table: Table<any>
-}) {
-
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
-
-  const columnFilterValue = column.getFilterValue()
-
-  const sortedUniqueValues = useMemo(
-    () =>
-      typeof firstValue === 'number'
-        ? []
-        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
-    [column.getFacetedUniqueValues()]
-  )
-
-  return (
-    <>
-      <datalist id={column.id + 'list'}>
-        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-      <DebouncedInput
-        type='text'
-        value={(columnFilterValue ?? '') as string}
-        onChange={(value) => column.setFilterValue(value)}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className='w-36 border shadow rounded'
-        list={column.id + 'list'}
-      />
-      <div className='h-1' />
-    </>
-  )
-}
-
 interface TableProps {
   filteredData: DetailedLaunch[]
   className?: string
   dynamicHeight?: string
   fetchSize?: number
   searchKey?: string
+  setColumnFilters?: (filterObj: any) => void
+  columnFilters: ColumnFilter[]
+  hiddenFilters?: string[]
+  launchSiteFilter?: string
 }
 
 const TableComponent: FC<TableProps> = ({
@@ -144,11 +75,15 @@ const TableComponent: FC<TableProps> = ({
   dynamicHeight,
   fetchSize = 10,
   searchKey,
+  setColumnFilters,
+  columnFilters,
+  hiddenFilters,
+  launchSiteFilter,
 }) => {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
@@ -181,6 +116,21 @@ const TableComponent: FC<TableProps> = ({
     ],
     []
   )
+
+  // Listen for changes to launchSiteFilter from outside this component
+  useEffect(() => {
+    table.setColumnFilters((activeFilters) => {
+      const newFilterValue = { id: 'site', value: launchSiteFilter }
+      const siteQueryCleared = [
+        ...activeFilters.filter((filter) => filter.id !== 'site'),
+      ]
+
+      // Handle Value Cleared
+      if (!!launchSiteFilter) {
+        return [...activeFilters, newFilterValue]
+      } else return siteQueryCleared
+    })
+  }, [launchSiteFilter])
 
   const mappedLaunches: DetailedLaunchRow[] = filteredData.map((launch) => {
     return {
@@ -279,7 +229,6 @@ const TableComponent: FC<TableProps> = ({
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -307,6 +256,18 @@ const TableComponent: FC<TableProps> = ({
   }
   return (
     <Fragment>
+      {hiddenFilters &&
+        hiddenFilters.map((id: string) => (
+          <Filter
+            column={table.getColumn(id)}
+            table={table}
+            className='hidden'
+          />
+        ))}
+
+      {searchKey && (
+        <Filter column={table.getColumn(searchKey)} table={table} />
+      )}
       <div
         className={cn(
           'overflow-x-auto overflow-y-hidden transition-height duration-700',
@@ -314,9 +275,6 @@ const TableComponent: FC<TableProps> = ({
           className
         )}>
         <table className='w-full'>
-          {searchKey && (
-            <Filter column={table.getColumn(searchKey)} table={table} />
-          )}
           <thead className='block'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
@@ -372,10 +330,7 @@ const TableComponent: FC<TableProps> = ({
                 <tr key={row.id} className='flex flex-row justify-between'>
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td
-                        className='w-full'
-                        key={cell.id}
-                      >
+                      <td className='w-full' key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

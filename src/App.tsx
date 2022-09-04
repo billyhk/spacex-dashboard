@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useId, Fragment } from 'react'
+import { FC, useMemo, useState, useId, Fragment, ChangeEvent } from 'react'
 import cn from 'classnames'
 import {
   PageContainer,
@@ -40,7 +40,48 @@ import missions from './datasets/missions.json'
 import payloadCustomers from './datasets/payloadCustomers.json'
 import detailedLaunches from './datasets/detailedLaunches.json'
 
+import { ColumnFiltersState } from '@tanstack/react-table'
+import { DebouncedInput } from './components/Table/Filter'
+
+export interface TableFilter {
+  id: string
+  value: string
+}
+interface FilterInput {
+  column: any
+}
+
+// FILTER WITH DROPDOWN SELECT
+export const ColumnFilterSelect = ({ column }: FilterInput) => {
+  const { filterValue, setFilter, preFilteredRows, id } = column
+  // Calculate the options for filtering using the preFilteredRows
+  const options: any[] = useMemo(() => {
+    const options = new Set()
+    preFilteredRows.forEach((row: any) => {
+      options.add(row.values[id])
+    })
+    return Array.from(options.values())
+  }, [id, preFilteredRows])
+
+  // Render a multi-select box
+  return (
+    <select
+      value={filterValue}
+      onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+        setFilter(e.target.value || undefined)
+      }}>
+      <option value=''>All</option>
+      {options.map((option, i) => (
+        <option key={i} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  )
+}
+
 interface AppProps {}
+
 const App: FC<AppProps> = () => {
   const statCardId = useId()
 
@@ -89,6 +130,9 @@ const App: FC<AppProps> = () => {
     ),
   }
 
+  const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
@@ -96,6 +140,21 @@ const App: FC<AppProps> = () => {
           header='SpaceX Mission Dashboard'
           toggleDarkMode={toggleDarkMode}
           darkMode={darkMode}
+        />
+
+        <h1 className='font-bold text-4xl'>setLaunchSiteFilter</h1>
+        {/*    <datalist id={column.id + 'list'}>
+        {sortedUniqueValues.slice(0, 5000).map((value: string) => (
+          <option value={value} key={value} />
+        ))}
+      </datalist> */}
+        <DebouncedInput
+          type='text'
+          value={(launchSiteFilter ?? '') as string}
+          onChange={(value) => setLaunchSiteFilter(value as string)}
+          placeholder={`Search Launch Site `}
+          className='w-36 border shadow rounded'
+          list={'site list'}
         />
 
         <div className='relative'>
@@ -167,6 +226,10 @@ const App: FC<AppProps> = () => {
                 tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-72'
               }
               searchKey='mission_name'
+              setColumnFilters={setColumnFilters}
+              columnFilters={columnFilters}
+              hiddenFilters={['site']}
+              launchSiteFilter={launchSiteFilter}
             />
           </TitleCard>
         </div>
