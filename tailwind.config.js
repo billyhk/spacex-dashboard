@@ -99,7 +99,8 @@ module.exports = {
         '155px': '155px',
         '170px': '170px',
         '207px': '207px',
-        'table_height': 'calc(100vh - 20rem)'
+        'table_height': 'calc(100vh - 20rem)',
+        'table_header_row_above_overflowing-tbody': 'calc(100% - 15px)'
       },
       fontSize: {
         '10px': '10px',

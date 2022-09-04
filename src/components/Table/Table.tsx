@@ -310,6 +310,7 @@ const TableComponent: FC<TableProps> = ({
       <div
         className={cn(
           'overflow-x-auto overflow-y-hidden transition-height duration-700',
+          'text-left text-sm',
           className
         )}>
         <table className='w-full'>
@@ -318,17 +319,15 @@ const TableComponent: FC<TableProps> = ({
           )}
           <thead className='block'>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr
+                key={headerGroup.id}
+                className='flex flex-row justify-evenly w-table_header_row_above_overflowing-tbody'>
                 {headerGroup.headers.map((header) => {
                   return (
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className='text-left'
-                      style={{
-                        // width: header.getSize(),
-                        width: `${100 / columns.length}vw`,
-                      }}>
+                      className='w-full'>
                       {header.isPlaceholder ? null : (
                         <div
                           {...{
@@ -355,7 +354,7 @@ const TableComponent: FC<TableProps> = ({
           </thead>
           <tbody
             className={cn(
-              'block overflow-y-auto transition-height duration-700',
+              'block overflow-y-scroll transition-height duration-700',
               dynamicHeight
             )}
             onScroll={(e) =>
@@ -364,18 +363,19 @@ const TableComponent: FC<TableProps> = ({
             ref={tableContainerRef as RefObject<HTMLTableSectionElement>}>
             {paddingTop > 0 && (
               <tr>
-                <td className='bg-teal' style={{ height: `${paddingTop}px` }} />
+                <td style={{ height: `${paddingTop}px` }} />
               </tr>
             )}
             {virtualRows.map((virtualRow) => {
               const row = rows[virtualRow.index] as Row<DetailedLaunchRow>
               return (
-                <tr key={row.id}>
+                <tr key={row.id} className='flex flex-row justify-between'>
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
+                        className='w-full'
                         key={cell.id}
-                        style={{ width: `${100 / columns.length}vw` }}>
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
