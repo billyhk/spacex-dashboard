@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { Table, Column } from '@tanstack/react-table'
 
 // A debounced input react component
@@ -11,6 +11,7 @@ export function DebouncedInput({
   value: string | number
   onChange: (value: string | number) => void
   debounce?: number
+
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
   const [value, setValue] = useState(initialValue)
 
@@ -39,8 +40,9 @@ interface TableFilterElement {
   column: Column<any, unknown>
   table: Table<any>
   className?: string
+  setLaunchSiteOptions?: Dispatch<SetStateAction<string[]>>
 }
-const Filter = ({ column, table, className }: TableFilterElement) => {
+const Filter = ({ column, table, className, setLaunchSiteOptions }: TableFilterElement) => {
   const firstValue = table
     .getPreFilteredRowModel()
     .flatRows[0]?.getValue(column.id)
@@ -54,6 +56,15 @@ const Filter = ({ column, table, className }: TableFilterElement) => {
         : Array.from(column.getFacetedUniqueValues().keys()).sort(),
     [column.getFacetedUniqueValues()]
   )
+
+    useEffect(()=>{
+    
+    if(!!setLaunchSiteOptions) {
+      // bubble up setLaunchSiteOptions
+      setLaunchSiteOptions(sortedUniqueValues)
+    }
+
+  },[sortedUniqueValues])
 
   return (
     <div className={className}>

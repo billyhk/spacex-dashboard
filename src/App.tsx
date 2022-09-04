@@ -47,38 +47,6 @@ export interface TableFilter {
   id: string
   value: string
 }
-interface FilterInput {
-  column: any
-}
-
-// FILTER WITH DROPDOWN SELECT
-export const ColumnFilterSelect = ({ column }: FilterInput) => {
-  const { filterValue, setFilter, preFilteredRows, id } = column
-  // Calculate the options for filtering using the preFilteredRows
-  const options: any[] = useMemo(() => {
-    const options = new Set()
-    preFilteredRows.forEach((row: any) => {
-      options.add(row.values[id])
-    })
-    return Array.from(options.values())
-  }, [id, preFilteredRows])
-
-  // Render a multi-select box
-  return (
-    <select
-      value={filterValue}
-      onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-        setFilter(e.target.value || undefined)
-      }}>
-      <option value=''>All</option>
-      {options.map((option, i) => (
-        <option key={i} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  )
-}
 
 interface AppProps {}
 
@@ -130,8 +98,12 @@ const App: FC<AppProps> = () => {
     ),
   }
 
+  // ----------------------------------- //
+  // ---- LAAUNCH SITE FILTER STATE ---- //
+  // ----------------------------------- //
   const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [launchSiteOptions, setLaunchSiteOptions] = useState<string[]>([])
 
   return (
     <PageContainer darkMode={darkMode}>
@@ -142,16 +114,22 @@ const App: FC<AppProps> = () => {
           darkMode={darkMode}
         />
 
-        <h1 className='font-bold text-4xl'>setLaunchSiteFilter</h1>
-        {/*    <datalist id={column.id + 'list'}>
-        {sortedUniqueValues.slice(0, 5000).map((value: string) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist> */}
+        <h1 className='font-bold text-4xl'>bubble up setLaunchSiteOptions</h1>
+        <datalist id={'site list'}>
+          {launchSiteOptions.slice(0, 5000).map((value: string) => (
+            <option value={value} key={value} />
+          ))}
+        </datalist>
         <DebouncedInput
           type='text'
           value={(launchSiteFilter ?? '') as string}
-          onChange={(value) => setLaunchSiteFilter(value as string)}
+          onChange={(value) => {
+            
+            // filter payload cards
+            // filter payload nationalities
+
+            setLaunchSiteFilter(value as string)
+          }}
           placeholder={`Search Launch Site `}
           className='w-36 border shadow rounded'
           list={'site list'}
@@ -223,13 +201,14 @@ const App: FC<AppProps> = () => {
             <TableComponent
               filteredData={filteredDetailedLaunches}
               dynamicHeight={
-                tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-72'
+                tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-64'
               }
               searchKey='mission_name'
               setColumnFilters={setColumnFilters}
               columnFilters={columnFilters}
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
+              setLaunchSiteOptions={setLaunchSiteOptions}
             />
           </TitleCard>
         </div>

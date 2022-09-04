@@ -1,7 +1,9 @@
 import {
+  Dispatch,
   FC,
   Fragment,
   RefObject,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -67,6 +69,7 @@ interface TableProps {
   columnFilters: ColumnFilter[]
   hiddenFilters?: string[]
   launchSiteFilter?: string
+  setLaunchSiteOptions: Dispatch<SetStateAction<string[]>>
 }
 
 const TableComponent: FC<TableProps> = ({
@@ -79,6 +82,7 @@ const TableComponent: FC<TableProps> = ({
   columnFilters,
   hiddenFilters,
   launchSiteFilter,
+  setLaunchSiteOptions,
 }) => {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -259,9 +263,13 @@ const TableComponent: FC<TableProps> = ({
       {hiddenFilters &&
         hiddenFilters.map((id: string) => (
           <Filter
+            key={id}
             column={table.getColumn(id)}
             table={table}
             className='hidden'
+            {...(id === 'site' && {
+              setLaunchSiteOptions: setLaunchSiteOptions,
+            })}
           />
         ))}
 
