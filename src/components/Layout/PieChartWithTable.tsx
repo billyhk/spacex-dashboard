@@ -27,6 +27,7 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data }) => {
         {data.map(({ country, count }, i) => {
           return (
             <div
+              key={i}
               className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
               onMouseEnter={() => setActiveIndex(i)}
               onMouseLeave={() => setActiveIndex(-1)}>
