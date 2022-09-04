@@ -26,7 +26,14 @@ import {
   MappedPayload,
   sortByCount,
 } from './utils'
-import { Launch, Mission, Payload, PayloadCustomer } from './interfaces'
+import {
+  DetailedLaunch,
+  DetailedLaunchRow,
+  Launch,
+  Mission,
+  Payload,
+  PayloadCustomer,
+} from './interfaces'
 
 // JSON DATA
 import missions from './datasets/missions.json'
@@ -56,7 +63,7 @@ const App: FC<AppProps> = () => {
     missions.data.missions
   )
   const [filteredDetailedLaunches, setFilteredDetailedLaunches] = useState<
-    Launch[]
+    DetailedLaunch[]
   >(detailedLaunches.data.launches)
 
   interface MemoizedData {
@@ -140,7 +147,7 @@ const App: FC<AppProps> = () => {
           {/* Table */}
           <TitleCard
             className={cn(
-              'w-full mt-4 left-0 absolute transition-top duration-700',
+              'w-full mt-4 left-0 absolute transition-top duration-700 overflow-auto',
               tableCardExpanded ? '-top-4' : 'top-full'
             )}
             title={
@@ -154,7 +161,10 @@ const App: FC<AppProps> = () => {
                 </span>
               </div>
             }>
-            <Table />
+            <Table
+              filteredData={filteredDetailedLaunches}
+              dynamicHeight={tableCardExpanded ? 'h-table_height' : 'h-72'}
+            />
           </TitleCard>
         </div>
       </main>
