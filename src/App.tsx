@@ -163,9 +163,10 @@ const App: FC<AppProps> = () => {
             }>
             <TableComponent
               filteredData={filteredDetailedLaunches}
-              dynamicHeight={tableCardExpanded ? 'h-table_height' : 'h-72'}
+              dynamicHeight={
+                tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-72'
+              }
               searchKey='mission_name'
-              
             />
           </TitleCard>
         </div>
