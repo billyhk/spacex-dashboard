@@ -1,25 +1,33 @@
-import { FC } from 'react'
 import { Cell, Pie, PieChart as RechartsPie, Tooltip } from 'recharts'
-import { MappedPayload } from '../../utils'
-import { CustomTooltip } from './CustomTooltip'
-
+import { TooltipProps } from 'recharts'
+import {
+  ValueType,
+  NameType,
+} from 'recharts/src/component/DefaultTooltipContent'
 interface PieChartProps<T> {
   data: T[]
   dataKey: string
   colors: string[]
   className?: string
   activeIndex?: number
+  showTooltip?: boolean
   setActiveIndex?: (index: number) => void
+  CustomTooltip: ({
+    active,
+    payload,
+  }: TooltipProps<ValueType, NameType>) => JSX.Element | null
 }
 
-const PieChart: FC<PieChartProps<MappedPayload>> = ({
+const PieChart = <T extends unknown>({
   data,
   colors,
   dataKey,
   className,
   activeIndex,
+  showTooltip = true,
   setActiveIndex,
-}) => {
+  CustomTooltip,
+}: PieChartProps<T>) => {
   return (
     <RechartsPie width={170} height={170} className={className}>
       <Pie
@@ -30,8 +38,7 @@ const PieChart: FC<PieChartProps<MappedPayload>> = ({
         outerRadius={80}
         paddingAngle={4}
         cornerRadius={100}
-        dataKey={dataKey}
-        >
+        dataKey={dataKey}>
         {data.map((entry, index: number) => (
           <Cell
             key={`cell-${index}`}
@@ -51,7 +58,12 @@ const PieChart: FC<PieChartProps<MappedPayload>> = ({
           />
         ))}
       </Pie>
-      <Tooltip content={<CustomTooltip />} wrapperStyle={{ outline: 0 }} />
+      {showTooltip && (
+        <Tooltip
+          {...(!!CustomTooltip && { content: <CustomTooltip /> })}
+          wrapperStyle={{ outline: 0 }}
+        />
+      )}
     </RechartsPie>
   )
 }

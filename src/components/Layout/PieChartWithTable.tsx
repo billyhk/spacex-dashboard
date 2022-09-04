@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 import { MappedPayload } from '../../utils'
 import { PieChart } from '../Chart'
+import { CustomTooltip } from '../Chart/CustomTooltip'
 
 const COLORS = ['#f97316', '#b91c1c', '#14b8a6', '#3b82f6', '#6d28d9']
 
@@ -18,6 +19,7 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data }) => {
         colors={COLORS}
         activeIndex={activeIndex}
         setActiveIndex={setActiveIndex}
+        CustomTooltip={CustomTooltip}
       />
       <div className='flex-1 flex flex-col w-full'>
         <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
