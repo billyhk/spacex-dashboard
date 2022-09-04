@@ -1,4 +1,5 @@
 import { FC, useMemo, useState, useId, Fragment } from 'react'
+import cn from 'classnames'
 import {
   PageContainer,
   DashboardHeader,
@@ -6,6 +7,7 @@ import {
 } from './components/Layout'
 import { StatisticCard, TitleCard } from './components/Cards'
 import { StatCardProps } from './components/Cards/StatisticCard'
+import { Table } from './components/Table'
 import {
   UserCircle,
   Archive,
@@ -24,12 +26,12 @@ import {
   MappedPayload,
   sortByCount,
 } from './utils'
-
 import { Launch, Mission, Payload, PayloadCustomer } from './interfaces'
+
+// JSON DATA
 import missions from './datasets/missions.json'
 import payloadCustomers from './datasets/payloadCustomers.json'
 import detailedLaunches from './datasets/detailedLaunches.json'
-import cn from 'classnames'
 
 interface AppProps {}
 const App: FC<AppProps> = () => {
@@ -135,7 +137,6 @@ const App: FC<AppProps> = () => {
               })}
             </div>
           </div>
-
           {/* Table */}
           <TitleCard
             className={cn(
@@ -153,7 +154,7 @@ const App: FC<AppProps> = () => {
                 </span>
               </div>
             }>
-            <div>TABLE GOES HERE</div>
+            <Table />
           </TitleCard>
         </div>
       </main>
