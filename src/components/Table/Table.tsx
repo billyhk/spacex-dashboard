@@ -17,10 +17,22 @@ import {
   SortingState,
   useReactTable,
   ColumnSort,
+  FilterFn,
+  sortingFns,
+  SortingFn,
+  ColumnFiltersState,
+  getFilteredRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  Table,
+  Column,
 } from '@tanstack/react-table'
 import {
-  useInfiniteQuery,
-} from '@tanstack/react-query'
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from '@tanstack/match-sorter-utils'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtual } from 'react-virtual'
 import {
   DetailedLaunch,
@@ -29,21 +41,117 @@ import {
 } from '../../interfaces'
 import cn from 'classnames'
 
-const fetchSize = 10
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value)
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  })
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed
+}
+
+// A debounced input react component
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number
+  onChange: (value: string | number) => void
+  debounce?: number
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+  const [value, setValue] = useState(initialValue)
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value)
+    }, debounce)
+
+    return () => clearTimeout(timeout)
+  }, [value])
+
+  return (
+    <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  )
+}
+
+function Filter({
+  column,
+  table,
+}: {
+  column: Column<any, unknown>
+  table: Table<any>
+}) {
+
+  const firstValue = table
+    .getPreFilteredRowModel()
+    .flatRows[0]?.getValue(column.id)
+
+  const columnFilterValue = column.getFilterValue()
+
+  const sortedUniqueValues = useMemo(
+    () =>
+      typeof firstValue === 'number'
+        ? []
+        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
+    [column.getFacetedUniqueValues()]
+  )
+
+  return (
+    <>
+      <datalist id={column.id + 'list'}>
+        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
+          <option value={value} key={value} />
+        ))}
+      </datalist>
+      <DebouncedInput
+        type='text'
+        value={(columnFilterValue ?? '') as string}
+        onChange={(value) => column.setFilterValue(value)}
+        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
+        className='w-36 border shadow rounded'
+        list={column.id + 'list'}
+      />
+      <div className='h-1' />
+    </>
+  )
+}
 
 interface TableProps {
   filteredData: DetailedLaunch[]
   className?: string
   dynamicHeight?: string
+  fetchSize?: number
+  searchKey?: string
 }
 
-const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
+const TableComponent: FC<TableProps> = ({
+  filteredData,
+  className,
+  dynamicHeight,
+  fetchSize = 10,
+  searchKey,
+}) => {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const columns = useMemo<ColumnDef<DetailedLaunchRow>[]>(
+  const [sorting, setSorting] = useState<SortingState>([])
+  const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
     () => [
       {
         accessorKey: 'mission_name',
@@ -71,7 +179,7 @@ const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
         header: 'Mission ID',
       },
     ],
-    [filteredData]
+    []
   )
 
   const mappedLaunches: DetailedLaunchRow[] = filteredData.map((launch) => {
@@ -160,14 +268,23 @@ const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
   const table = useReactTable({
     data: flatData,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
     state: {
+      columnFilters,
       sorting,
     },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
-    autoResetAll: false
+    autoResetAll: false,
   })
 
   const { rows } = table.getRowModel()
@@ -188,7 +305,6 @@ const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
   if (isLoading) {
     return <>Loading...</>
   }
-
   return (
     <Fragment>
       <div
@@ -197,6 +313,9 @@ const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
           className
         )}>
         <table className='w-full'>
+          {searchKey && (
+            <Filter column={table.getColumn(searchKey)} table={table} />
+          )}
           <thead className='block'>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -282,4 +401,4 @@ const Table: FC<TableProps> = ({ filteredData, className, dynamicHeight }) => {
   )
 }
 
-export default Table
+export default TableComponent

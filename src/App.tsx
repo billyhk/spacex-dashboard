@@ -7,7 +7,7 @@ import {
 } from './components/Layout'
 import { StatisticCard, TitleCard } from './components/Cards'
 import { StatCardProps } from './components/Cards/StatisticCard'
-import { Table } from './components/Table'
+import { TableComponent } from './components/Table'
 import {
   UserCircle,
   Archive,
@@ -161,9 +161,11 @@ const App: FC<AppProps> = () => {
                 </span>
               </div>
             }>
-            <Table
+            <TableComponent
               filteredData={filteredDetailedLaunches}
               dynamicHeight={tableCardExpanded ? 'h-table_height' : 'h-72'}
+              searchKey='mission_name'
+              
             />
           </TitleCard>
         </div>
