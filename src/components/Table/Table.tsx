@@ -27,12 +27,20 @@ import {
 } from '@tanstack/react-table'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtual } from 'react-virtual'
-import { DetailedLaunchApiResponse, DetailedLaunchRow } from '../../interfaces'
+import {
+  DetailedLaunch,
+  DetailedLaunchApiResponse,
+  DetailedLaunchRow,
+  Mission,
+  MissionApiResponse,
+} from '../../interfaces'
 import cn from 'classnames'
 import Filter from './Filter'
 
 // This will act as our database
 import detailedLaunches from '../../datasets/detailedLaunches.json'
+import missions from '../../datasets/missions.json'
+
 interface TableProps {
   className?: string
   dynamicHeight?: string
@@ -42,8 +50,10 @@ interface TableProps {
   columnFilters: ColumnFilter[]
   hiddenFilters?: string[]
   launchSiteFilter?: string
-  setLaunchSiteOptions: Dispatch<SetStateAction<string[]>>
+  setLaunchSiteOptions?: Dispatch<SetStateAction<string[]>>
   onFetchedNewData?: (data: any) => void
+  setPaginatedMissions: Dispatch<SetStateAction<Mission[]>>
+  setPaginatedLaunches: Dispatch<SetStateAction<DetailedLaunchRow[]>>
 }
 
 const TableComponent: FC<TableProps> = ({
@@ -57,6 +67,8 @@ const TableComponent: FC<TableProps> = ({
   launchSiteFilter,
   setLaunchSiteOptions,
   onFetchedNewData,
+  setPaginatedMissions,
+  setPaginatedLaunches,
 }) => {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -121,7 +133,7 @@ const TableComponent: FC<TableProps> = ({
     })
 
   //simulates a backend api
-  const fetchData = (start: number, size: number, sorting: SortingState) => {
+  const fetchLaunches = (start: number, size: number, sorting: SortingState) => {
     const dbData = [...mappedLaunches]
     if (sorting.length) {
       const sort = sorting[0] as ColumnSort
@@ -145,13 +157,40 @@ const TableComponent: FC<TableProps> = ({
     }
   }
 
+  const fetchMissions = (
+    start: number,
+    size: number,
+    sorting: SortingState
+  ) => {
+    const dbData = [...missions.data.missions]
+    if (sorting.length) {
+      const sort = sorting[0] as ColumnSort
+      const { id, desc } = sort as {
+        id: keyof Mission
+        desc: boolean
+      }
+      dbData.sort((a, b) => {
+        if (desc) {
+          return a[id] < b[id] ? 1 : -1
+        }
+        return a[id] > b[id] ? 1 : -1
+      })
+    }
+    return {
+      data: dbData.slice(start, start + size),
+      meta: {
+        totalRowCount: dbData.length,
+      },
+    }
+  }
+
   //react-query has an useInfiniteQuery hook just for this situation!
   const { data, fetchNextPage, isFetching, isLoading } =
     useInfiniteQuery<DetailedLaunchApiResponse>(
       ['table-data'], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
       async ({ pageParam = 0 }) => {
         const start = pageParam * fetchSize
-        const fetchedData = fetchData(start, fetchSize, sorting) //pretend api call
+        const fetchedData = fetchLaunches(start, fetchSize, sorting) //pretend api call
         return fetchedData
       },
       {
@@ -169,6 +208,21 @@ const TableComponent: FC<TableProps> = ({
   const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0
   const totalFetched = flatData.length
 
+  //react-query has an useInfiniteQuery hook just for this situation!
+  const getMissions = useInfiniteQuery<any>(
+    ['missions-data'], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
+    async ({ pageParam = 0 }) => {
+      const start = pageParam * fetchSize
+      const fetchedMissions = fetchMissions(start, fetchSize, sorting) //pretend api call
+      return fetchedMissions
+    },
+    {
+      getNextPageParam: (_lastGroup, groups) => groups.length,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  )
+
   //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
   const fetchMoreOnBottomReached = useCallback(
     (containerRefElement?: HTMLDivElement | null) => {
@@ -181,10 +235,11 @@ const TableComponent: FC<TableProps> = ({
           totalFetched < totalDBRowCount
         ) {
           fetchNextPage()
+          getMissions.fetchNextPage()
         }
       }
     },
-    [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
+    [fetchNextPage, getMissions.fetchNextPage, totalFetched, totalDBRowCount]
   )
 
   //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
@@ -226,11 +281,10 @@ const TableComponent: FC<TableProps> = ({
       : 0
 
   useEffect(() => {
-    if (onFetchedNewData) {
-      onFetchedNewData(
-        virtualRows.map((virtualRow) => rows[virtualRow.index].original)
-      )
-    }
+    setPaginatedLaunches(flatData)
+    setPaginatedMissions(
+      getMissions.data?.pages?.flatMap((page) => page.data) ?? []
+    )
   }, [virtualRows])
 
   if (isLoading) {
@@ -250,7 +304,7 @@ const TableComponent: FC<TableProps> = ({
             })}
           />
         ))}
-
+      showing {rows.length} of {flatData.length}
       {searchKey && (
         <Filter column={table.getColumn(searchKey)} table={table} />
       )}

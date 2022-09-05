@@ -26,13 +26,15 @@ import {
   MappedPayload,
   sortByCount,
 } from './utils'
-import { DetailedLaunch, Mission, Payload } from './interfaces'
+import {
+  DetailedLaunch,
+  DetailedLaunchRow,
+  Mission,
+  Payload,
+} from './interfaces'
 import { ColumnFiltersState } from '@tanstack/react-table'
 import { Switch } from './components/Inputs'
 import { MenuButton } from './components/Button'
-
-// JSON DATA
-import missions from './datasets/missions.json'
 
 interface AppProps {}
 
@@ -56,28 +58,52 @@ const App: FC<AppProps> = () => {
   // ----------------------------------- //
   const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [launchSiteOptions, setLaunchSiteOptions] = useState<string[]>([])
 
   // -------------- //
   // ---- DATA ---- //
-  // -------------- //
-  const [paginatedLaunches, setPaginatedLaunches] = useState<DetailedLaunch[]>(
-    []
-  )
-  const [filteredMissions, setFilteredMissions] = useState<Mission[]>(
-    missions.data.missions
-  )
+  // -------------- // 
+  const [paginatedLaunches, setPaginatedLaunches] = useState<
+    DetailedLaunchRow[]
+  >([])
+  const [paginatedMissions, setPaginatedMissions] = useState<Mission[]>([])
 
-  // Update state based on paginated table data
-  useEffect(() => {
-    setFilteredMissions(memoized.paginatedMissions)
+  const filteredLaunches: DetailedLaunchRow[] = useMemo(() => {
+    const launchesBySite = paginatedLaunches.filter(
+      (launch) => launch.site === launchSiteFilter
+    )
+    if (launchSiteFilter) {
+      return launchesBySite
+    } else {
+      return paginatedLaunches
+    }
+  }, [launchSiteFilter, paginatedLaunches])
+
+  const filteredMissions = useMemo<Mission[]>(() => {
+    const result = paginatedMissions.filter((mission) => {
+      const paginatedLaunchMissionIds = filteredLaunches.map(
+        (launch) => launch.mission_id
+      )
+      // filter missions based on launch site
+      return !!paginatedLaunchMissionIds.find((launch: string | string[]) => {
+        return launch === mission.id
+      })
+    })
+    return result
+  }, [launchSiteFilter, filteredLaunches, paginatedMissions])
+
+  const findDuplicates = (arr: string[]) =>
+    arr.filter((item, index) => arr.indexOf(item) != index)
+
+  const launchSiteOptions = useMemo(() => {
+    const paginatedLaunchSites = paginatedLaunches.map((launch) => launch.site)
+    const deduplicated = new Set(findDuplicates(paginatedLaunchSites))
+    return Array.from(deduplicated)
   }, [paginatedLaunches])
-
   interface MemoizedData {
     avgPayloadMass: number
     totalCountMissionPayloads: number
     payloadsByNationality: MappedPayload[]
-    paginatedMissions: Mission[]
+    // paginatedMissions: Mission[]
     totalPayloadCustomers: number
   }
   const memoized: MemoizedData = {
@@ -96,16 +122,16 @@ const App: FC<AppProps> = () => {
           .slice(0, 5),
       [filteredMissions]
     ),
-    paginatedMissions: useMemo(() => {
-      return missions.data.missions.filter((mission) => {
-        const paginatedLaunchMissionIds = paginatedLaunches?.map(
-          (launch) => launch.mission_id
-        )
-        return !!paginatedLaunchMissionIds?.find(
-          (launch: string | string[]) => launch === mission.id
-        )
-      })
-    }, [paginatedLaunches]),
+    // paginatedMissions: useMemo(() => {
+    //   return paginatedMissions.filter((mission) => {
+    //     const paginatedLaunchMissionIds = paginatedLaunches?.map(
+    //       (launch) => launch.mission_id
+    //     )
+    //     return !!paginatedLaunchMissionIds?.find(
+    //       (launch: string | string[]) => launch === mission.id
+    //     )
+    //   })
+    // }, [paginatedLaunches, paginatedMissions]),
     totalPayloadCustomers: useMemo(() => {
       const payloadsPerMission = filteredMissions.map((mission: Mission) => {
         return mission.payloads.filter((payload: Payload) => !!payload)
@@ -167,7 +193,6 @@ const App: FC<AppProps> = () => {
                   className='cursor-pointer'
                   onClick={() => {
                     setLaunchSiteFilter('')
-                    setFilteredMissions(memoized.paginatedMissions)
                     setMenuOpen('')
                   }}>
                   Clear Filter
@@ -178,7 +203,6 @@ const App: FC<AppProps> = () => {
                     onClick={() => {
                       // Filter Table
                       setLaunchSiteFilter(opt as string)
-                      setFilteredMissions(memoized.paginatedMissions)
                       setMenuOpen('')
                     }}>
                     {opt}
@@ -279,10 +303,12 @@ const App: FC<AppProps> = () => {
               columnFilters={columnFilters}
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
-              setLaunchSiteOptions={setLaunchSiteOptions}
+              // setLaunchSiteOptions={setLaunchSiteOptions}
               onFetchedNewData={(paginatedData) => {
                 setPaginatedLaunches(paginatedData)
               }}
+              setPaginatedLaunches={setPaginatedLaunches}
+              setPaginatedMissions={setPaginatedMissions}
             />
           </TitleCard>
         </section>

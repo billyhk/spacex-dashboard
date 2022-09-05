@@ -11,9 +11,10 @@ interface PieChartWithTableProps {
 const PieChartWithTable: FC<PieChartWithTableProps> = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState<number>(-1)
 
-  return !data.length ? (
-    <span className='text-base text-red-3 font-bold'>No missions to report given current filters.</span>
-  ) : (
+  // return !data.length ? (
+  //   <span className='text-base text-red-3 font-bold'>{No missions to report given current filters.}</span>
+  // ) : (
+  return (
     <div className='flex flex-col md:flex-row gap-4 items-start'>
       <PieChart
         data={data}

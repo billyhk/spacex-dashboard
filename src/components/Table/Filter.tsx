@@ -10,7 +10,6 @@ export function DebouncedInput({
   value: string | number
   onChange: (value: string | number) => void
   debounce?: number
-
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
   const [value, setValue] = useState(initialValue)
 
@@ -41,7 +40,12 @@ interface TableFilterElement {
   className?: string
   setLaunchSiteOptions?: Dispatch<SetStateAction<string[]>>
 }
-const Filter = ({ column, table, className, setLaunchSiteOptions }: TableFilterElement) => {
+const Filter = ({
+  column,
+  table,
+  className,
+  setLaunchSiteOptions,
+}: TableFilterElement) => {
   const firstValue = table
     .getPreFilteredRowModel()
     .flatRows[0]?.getValue(column.id)
@@ -56,14 +60,12 @@ const Filter = ({ column, table, className, setLaunchSiteOptions }: TableFilterE
     [column.getFacetedUniqueValues()]
   )
 
-    useEffect(()=>{
-    
-    if(!!setLaunchSiteOptions) {
-      // bubble up setLaunchSiteOptions
+  useEffect(() => {
+    if (setLaunchSiteOptions) {
+      // bubble up sortedUniqueValues to use launch site options outside of table
       setLaunchSiteOptions(sortedUniqueValues)
     }
-
-  },[sortedUniqueValues])
+  }, [sortedUniqueValues])
 
   return (
     <div className={className}>

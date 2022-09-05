@@ -10,3 +10,9 @@ export interface Mission {
   name: string
   payloads: Payload[]
 }
+
+export interface MissionApiResponse {
+  data: {
+    missions: Mission[]
+  }
+}
