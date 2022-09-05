@@ -205,10 +205,10 @@ const TableComponent: FC<TableProps> = ({
 
   // Use react-query's useInfiniteQuery hook to handle pagination of response data (Mission[])
   const getMissions = useInfiniteQuery<MissionApiResponse>(
-    ['missions-data'], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
+    ['missions-data'],
     async ({ pageParam = 0 }) => {
       const start = pageParam * fetchSize
-      const fetchedMissions = fetchMissions(start, fetchSize, sorting) //pretend api call
+      const fetchedMissions = fetchMissions(start, fetchSize, sorting) //simulate api call with /datasets/missions.json
       return fetchedMissions
     },
     {
