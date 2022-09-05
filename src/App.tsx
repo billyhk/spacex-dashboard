@@ -203,7 +203,7 @@ const App: FC<AppProps> = () => {
           </div>
         </DashboardHeader>
 
-        <div className='relative'>
+        <section className='relative'>
           <div
             className={cn(
               'flex flex-col lg:flex-row gap-4 mb-4',
@@ -285,7 +285,7 @@ const App: FC<AppProps> = () => {
               }}
             />
           </TitleCard>
-        </div>
+        </section>
       </main>
     </PageContainer>
   )
