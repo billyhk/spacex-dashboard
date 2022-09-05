@@ -10,12 +10,9 @@ interface PieChartWithTableProps {
 }
 const PieChartWithTable: FC<PieChartWithTableProps> = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState<number>(-1)
-
-  // return !data.length ? (
-  //   <span className='text-base text-red-3 font-bold'>{No missions to report given current filters.}</span>
-  // ) : (
+  
   return (
-    <div className='flex flex-col md:flex-row gap-4 items-start'>
+    <div className='flex flex-col md:flex-row gap-4 items-center'>
       <PieChart
         data={data}
         dataKey='count'
@@ -25,10 +22,10 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data }) => {
         CustomTooltip={CustomTooltip}
       />
       <div className='flex-1 flex flex-col w-full'>
-        <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
+        {!!data.length && <div className='grid grid-cols-2 gap-x-4 text-xs text-grey-3 dark:text-white font-bold mb-4'>
           <span>NATIONALITY</span>
           <span>PAYLOAD COUNT</span>
-        </div>
+        </div>}
 
         {data.map(({ country, count }, i) => {
           return (

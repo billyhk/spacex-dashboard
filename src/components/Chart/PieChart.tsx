@@ -33,8 +33,8 @@ const PieChart = <T extends unknown>({
     <RechartsPie width={170} height={170} className={className}>
       <Pie
         data={data}
-        cx={80}
-        cy={80}
+        cx={75}
+        cy={75}
         innerRadius={60}
         outerRadius={70}
         paddingAngle={3}
