@@ -112,7 +112,7 @@ const TableComponent: FC<TableProps> = ({
   }, [launchSiteFilter])
 
   // ------------------------------------------------------- //
-  // FETCH DATA (2 Requests: DetailedLaunch[] and Mission[]) //
+  // FETCH DATA (2 Requests: Detailed-Launches and Missions) //
   // ------------------------------------------------------- //
   const fetchLaunches = (
     start: number,
@@ -195,7 +195,7 @@ const TableComponent: FC<TableProps> = ({
     }
   )
 
-  //flatten the array of arrays from the useInfiniteQuery hook
+  // Flatten the array of arrays from the useInfiniteQuery hook
   const flatLaunchesData: DetailedLaunchRow[] = useMemo(
     () => getDetailedLaunches.data?.pages?.flatMap((page) => page.data) ?? [],
     [getDetailedLaunches.data]
@@ -228,13 +228,13 @@ const TableComponent: FC<TableProps> = ({
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement
-        //once the user has scrolled within 300px of the bottom of the table, fetch more data if there is any
+        // Once the user has scrolled within 300px of the bottom of the table, fetch more data if there is any
         if (
           scrollHeight - scrollTop - clientHeight < 300 &&
           !getDetailedLaunches.isFetching &&
           totalFetched < totalDBRowCount
         ) {
-          getDetailedLaunches.fetchNextPage() // launch data used for table
+          getDetailedLaunches.fetchNextPage() // launches data used for table
           getMissions.fetchNextPage() // missions data used for other dashboard components
         }
       }
