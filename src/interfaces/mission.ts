@@ -17,3 +17,5 @@ export interface MissionApiResponse {
     totalRowCount: number
   }
 }
+
+export type MissionPayloads = (Payload | never[])[]

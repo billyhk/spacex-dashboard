@@ -1,5 +1,5 @@
-import { Mission, Payload } from '../interfaces'
-import { countFrequency, flattenStrArray } from '.'
+import { MissionPayloads, Payload } from '../interfaces'
+import { countFrequency } from '.'
 
 export interface MappedPayload {
   country: string
@@ -7,16 +7,16 @@ export interface MappedPayload {
 }
 
 export const getPayloadsByNationality = (
-  missions: Mission[]
+  missionPayloads: MissionPayloads
 ): MappedPayload[] => {
-  const nationalitiesArr = missions.map((mission) => {
-    return mission.payloads
-      .map((payload: Payload) => payload?.nationality)
-      .filter((payload) => !!payload)
+  const nationalities = missionPayloads.map((payload: never[] | Payload) => {
+    if (payload && 'nationality' in payload) {
+      return payload.nationality
+    }
+    return ''
   })
-  const frequencyMap: { [key: string]: number } = countFrequency(
-    flattenStrArray(nationalitiesArr)
-  )
+
+  const frequencyMap: { [key: string]: number } = countFrequency(nationalities)
 
   return Object.entries(frequencyMap).map(([key, value]: [string, number]) => {
     return {

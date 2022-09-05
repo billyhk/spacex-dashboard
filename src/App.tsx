@@ -19,15 +19,20 @@ import {
   ChevronDown,
 } from './components/Icons'
 import {
-  countPayloads,
-  getAvgPayloadMass,
+  getAverage,
   getLaunchSiteOptions,
+  getPayloadMasses,
   getPayloadsByNationality,
   getTotalPayloadCustomers,
   MappedPayload,
   sortByCount,
 } from './utils'
-import { DetailedLaunchRow, Mission } from './interfaces'
+import {
+  DetailedLaunchRow,
+  Mission,
+  MissionPayloads,
+  Payload,
+} from './interfaces'
 import { Switch } from './components/Inputs'
 import { MenuButton } from './components/Button'
 
@@ -70,52 +75,57 @@ const App: FC<AppProps> = () => {
     }
   }, [launchSiteFilter, paginatedLaunches])
 
-  const filteredMissions = useMemo<Mission[]>(() => {
-    const result = paginatedMissions.filter((mission) => {
-      const paginatedLaunchMissionIds = filteredLaunches.map(
-        (launch) => launch.mission_id
-      )
-      // filter missions based on launch site
-      return !!paginatedLaunchMissionIds.find((launch: string | string[]) => {
-        return launch === mission.id
+  const filteredMissionPayloads: MissionPayloads = useMemo(() => {
+    const getFilteredMissions = () => {
+      const result = paginatedMissions.filter((mission) => {
+        const paginatedLaunchMissionIds = filteredLaunches.map(
+          (launch) => launch.mission_id
+        )
+        // filter missions based on launch site
+        return !!paginatedLaunchMissionIds.find((launch: string | string[]) => {
+          return launch === mission.id
+        })
       })
-    })
-    return result
-  }, [filteredLaunches, paginatedMissions])
+      return result
+    }
 
+    const mappedPayloads = getFilteredMissions()
+      .map((mission) =>
+        mission.payloads.map((payload: Payload) => payload ?? [])
+      )
+      .flat()
+      .filter((payload) => !Array.isArray(payload)) // if payload is [] here, then it was null in the database above
+
+    return mappedPayloads
+  }, [filteredLaunches, paginatedMissions])
 
   // -------------------------------------------------------------------- //
   // ---- Secondary DATA (memoized, dependendent upon primary data ------ //
   // -------------------------------------------------------------------- //
   interface MemoizedData {
-    avgPayloadMass: number
-    totalCountMissionPayloads: number
+    payloadMasses: number[]
     payloadsByNationality: MappedPayload[]
     totalPayloadCustomers: number
     launchSiteOptions: string[]
   }
   const memoized: MemoizedData = {
-    avgPayloadMass: useMemo(
-      () => getAvgPayloadMass(filteredMissions),
-      [filteredMissions]
-    ),
-    totalCountMissionPayloads: useMemo(
-      () => countPayloads(filteredMissions),
-      [filteredMissions]
+    payloadMasses: useMemo(
+      () => getPayloadMasses(filteredMissionPayloads),
+      [filteredMissionPayloads]
     ),
     payloadsByNationality: useMemo(
       () =>
-        getPayloadsByNationality(filteredMissions)
+        getPayloadsByNationality(filteredMissionPayloads)
           .sort(sortByCount)
           .slice(0, 5),
-      [filteredMissions]
+      [filteredMissionPayloads]
     ),
     totalPayloadCustomers: useMemo(
-      () => getTotalPayloadCustomers(filteredMissions),
-      [filteredMissions]
+      () => getTotalPayloadCustomers(filteredMissionPayloads),
+      [filteredMissionPayloads]
     ),
     launchSiteOptions: useMemo(
-      () => getLaunchSiteOptions(paginatedLaunches),
+      () => getLaunchSiteOptions(paginatedLaunches).sort(),
       [paginatedLaunches]
     ),
   }
@@ -160,6 +170,7 @@ const App: FC<AppProps> = () => {
                 <span
                   className='cursor-pointer'
                   onClick={() => {
+                    // Filter Table & Close Menu
                     setLaunchSiteFilter('')
                     setMenuOpen('')
                   }}>
@@ -169,7 +180,6 @@ const App: FC<AppProps> = () => {
                   <div
                     className='cursor-pointer'
                     onClick={() => {
-                      // Filter Table
                       setLaunchSiteFilter(opt as string)
                       setMenuOpen('')
                     }}>
@@ -220,15 +230,15 @@ const App: FC<AppProps> = () => {
               {[
                 {
                   label: 'Total Payloads',
-                  value: memoized.totalCountMissionPayloads,
+                  value: memoized.payloadMasses.length,
                   Icon: () => <Archive />,
                   linkTo: '/',
                 },
                 {
                   label: 'Avg. Payload Mass',
                   value: `${
-                    !!memoized.avgPayloadMass
-                      ? memoized.avgPayloadMass.toFixed(0)
+                    !!memoized.payloadMasses.length
+                      ? getAverage(memoized.payloadMasses).toFixed(0)
                       : 0
                   } kg`,
                   Icon: () => <Scale />,
