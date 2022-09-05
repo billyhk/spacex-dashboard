@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { Table, Column } from '@tanstack/react-table'
 
-// A debounced input react component
 export function DebouncedInput({
   value: initialValue,
   onChange,

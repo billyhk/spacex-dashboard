@@ -112,27 +112,9 @@ const App: FC<AppProps> = () => {
           header='SpaceX Mission Dashboard'
           toggleDarkMode={toggleDarkMode}
           darkMode={darkMode}
-        />
-
-        <h1 className='font-bold text-4xl'>bubble up setLaunchSiteOptions</h1>
-        <datalist id={'site list'}>
-          {launchSiteOptions.slice(0, 5000).map((value: string) => (
-            <option value={value} key={value} />
-          ))}
-        </datalist>
-        <DebouncedInput
-          type='text'
-          value={(launchSiteFilter ?? '') as string}
-          onChange={(value) => {
-            
-            // filter payload cards
-            // filter payload nationalities
-
-            setLaunchSiteFilter(value as string)
-          }}
-          placeholder={`Search Launch Site `}
-          className='w-36 border shadow rounded'
-          list={'site list'}
+          launchSiteOptions={launchSiteOptions}
+          launchSiteFilter={launchSiteFilter}
+          setLaunchSiteFilter={setLaunchSiteFilter}
         />
 
         <div className='relative'>
