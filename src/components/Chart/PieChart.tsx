@@ -28,15 +28,16 @@ const PieChart = <T extends unknown>({
   setActiveIndex,
   CustomTooltip,
 }: PieChartProps<T>) => {
+
   return (
     <RechartsPie width={170} height={170} className={className}>
       <Pie
         data={data}
         cx={80}
         cy={80}
-        innerRadius={70}
-        outerRadius={80}
-        paddingAngle={4}
+        innerRadius={60}
+        outerRadius={70}
+        paddingAngle={3}
         cornerRadius={100}
         dataKey={dataKey}>
         {data.map((entry, index: number) => (

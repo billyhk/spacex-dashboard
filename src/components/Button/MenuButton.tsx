@@ -38,7 +38,7 @@ const MenuButton: React.FC<ButtonProps> = ({
             'animate-fadein_drop'
           )}>
           {menuItems?.map((el, i) => (
-            <Fragment>
+            <Fragment key={i}>
               <div className='p-4 hover:bg-grey dark:hover:bg-grey-7'>{el}</div>
               {i !== menuItems.length - 1 && (
                 <div className='w-full h-1px bg-grey-secondary dark:bg-black-4'></div>

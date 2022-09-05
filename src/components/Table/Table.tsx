@@ -19,61 +19,34 @@ import {
   SortingState,
   useReactTable,
   ColumnSort,
-  FilterFn,
-  sortingFns,
-  SortingFn,
-  ColumnFiltersState,
   getFilteredRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
-  Table,
-  Column,
   ColumnFilter,
+  ColumnFiltersState,
 } from '@tanstack/react-table'
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from '@tanstack/match-sorter-utils'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtual } from 'react-virtual'
-import {
-  DetailedLaunch,
-  DetailedLaunchApiResponse,
-  DetailedLaunchRow,
-} from '../../interfaces'
+import { DetailedLaunchApiResponse, DetailedLaunchRow } from '../../interfaces'
 import cn from 'classnames'
-import { TableFilter } from '../../App'
 import Filter from './Filter'
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  })
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed
-}
-
+// This will act as our database
+import detailedLaunches from '../../datasets/detailedLaunches.json'
 interface TableProps {
-  filteredData: DetailedLaunch[]
   className?: string
   dynamicHeight?: string
   fetchSize?: number
   searchKey?: string
-  setColumnFilters?: (filterObj: any) => void
+  setColumnFilters?: Dispatch<SetStateAction<ColumnFiltersState>>
   columnFilters: ColumnFilter[]
   hiddenFilters?: string[]
   launchSiteFilter?: string
   setLaunchSiteOptions: Dispatch<SetStateAction<string[]>>
+  onFetchedNewData?: (data: any) => void
 }
 
 const TableComponent: FC<TableProps> = ({
-  filteredData,
   className,
   dynamicHeight,
   fetchSize = 10,
@@ -83,11 +56,10 @@ const TableComponent: FC<TableProps> = ({
   hiddenFilters,
   launchSiteFilter,
   setLaunchSiteOptions,
+  onFetchedNewData,
 }) => {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
@@ -136,16 +108,17 @@ const TableComponent: FC<TableProps> = ({
     })
   }, [launchSiteFilter])
 
-  const mappedLaunches: DetailedLaunchRow[] = filteredData.map((launch) => {
-    return {
-      mission_name: launch.mission_name || '',
-      date: launch.launch_date_utc || '',
-      outcome: !!launch.launch_success ? 'Success' : 'Failure',
-      rocket: launch.rocket.rocket_name || '',
-      site: launch.launch_site.site_name || '',
-      mission_id: launch.mission_id[0] || '',
-    }
-  })
+  const mappedLaunches: DetailedLaunchRow[] =
+    detailedLaunches.data.launches.map((launch) => {
+      return {
+        mission_name: launch.mission_name || '',
+        date: launch.launch_date_utc || '',
+        outcome: !!launch.launch_success ? 'Success' : 'Failure',
+        rocket: launch.rocket.rocket_name || '',
+        site: launch.launch_site.site_name || '',
+        mission_id: launch.mission_id[0] || 'Not Available',
+      }
+    })
 
   //simulates a backend api
   const fetchData = (start: number, size: number, sorting: SortingState) => {
@@ -222,9 +195,6 @@ const TableComponent: FC<TableProps> = ({
   const table = useReactTable({
     data: flatData,
     columns,
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
     state: {
       columnFilters,
       sorting,
@@ -254,6 +224,14 @@ const TableComponent: FC<TableProps> = ({
     virtualRows.length > 0
       ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0
+
+  useEffect(() => {
+    if (onFetchedNewData) {
+      onFetchedNewData(
+        virtualRows.map((virtualRow) => rows[virtualRow.index].original)
+      )
+    }
+  }, [virtualRows])
 
   if (isLoading) {
     return <>Loading...</>

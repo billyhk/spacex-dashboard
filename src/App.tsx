@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useId, Fragment, ChangeEvent } from 'react'
+import { FC, useMemo, useState, useId, Fragment, useEffect } from 'react'
 import cn from 'classnames'
 import {
   PageContainer,
@@ -13,40 +13,27 @@ import {
   Archive,
   QuestionMark,
   Scale,
-
-  // Table
   ArrowsExpand,
-  Search,
-  Arrow,
+  Cog,
+  OfficeBuilding,
+  ChevronDown,
 } from './components/Icons'
 import {
   countPayloads,
+  flattenStrArray,
   getAvgPayloadMass,
   getPayloadsByNationality,
   MappedPayload,
   sortByCount,
 } from './utils'
-import {
-  DetailedLaunch,
-  DetailedLaunchRow,
-  Launch,
-  Mission,
-  Payload,
-  PayloadCustomer,
-} from './interfaces'
+import { DetailedLaunch, Mission, Payload } from './interfaces'
+import { ColumnFiltersState } from '@tanstack/react-table'
+import { Switch } from './components/Inputs'
+import { MenuButton } from './components/Button'
 
 // JSON DATA
 import missions from './datasets/missions.json'
-import payloadCustomers from './datasets/payloadCustomers.json'
-import detailedLaunches from './datasets/detailedLaunches.json'
 
-import { ColumnFiltersState } from '@tanstack/react-table'
-import { DebouncedInput } from './components/Table/Filter'
-
-export interface TableFilter {
-  id: string
-  value: string
-}
 
 interface AppProps {}
 
@@ -65,20 +52,24 @@ const App: FC<AppProps> = () => {
   // -------------- //
   // ---- DATA ---- //
   // -------------- //
-  const [filteredPayloadCustomers, setFilteredPayloadCustomers] = useState<
-    PayloadCustomer[]
-  >(payloadCustomers.data.payloads)
+  const [paginatedLaunches, setPaginatedLaunches] = useState<DetailedLaunch[]>(
+    []
+  )
   const [filteredMissions, setFilteredMissions] = useState<Mission[]>(
     missions.data.missions
   )
-  const [filteredDetailedLaunches, setFilteredDetailedLaunches] = useState<
-    DetailedLaunch[]
-  >(detailedLaunches.data.launches)
+
+  // Update state based on paginated table data
+  useEffect(() => {
+    setFilteredMissions(memoized.paginatedMissions)
+  }, [paginatedLaunches])
 
   interface MemoizedData {
     avgPayloadMass: number
     totalCountMissionPayloads: number
     payloadsByNationality: MappedPayload[]
+    paginatedMissions: Mission[]
+    totalPayloadCustomers: number
   }
   const memoized: MemoizedData = {
     avgPayloadMass: useMemo(
@@ -96,7 +87,38 @@ const App: FC<AppProps> = () => {
           .slice(0, 5),
       [filteredMissions]
     ),
+    paginatedMissions: useMemo(() => {
+      return missions.data.missions.filter((mission) => {
+        const paginatedLaunchMissionIds = paginatedLaunches?.map(
+          (launch) => launch.mission_id
+        )
+        return !!paginatedLaunchMissionIds?.find(
+          (launch: string | string[]) => launch === mission.id
+        )
+      })
+    }, [paginatedLaunches]),
+    totalPayloadCustomers: useMemo(() => {
+      const payloadsPerMission = filteredMissions.map((mission: Mission) => {
+        return mission.payloads.filter((payload: Payload) => !!payload)
+      })
+      const helperFlatten = (arr: any[]): Payload[] => {
+        return arr.reduce(
+          (acc, val) =>
+            acc.concat(Array.isArray(val) ? helperFlatten(val) : val),
+          []
+        ) as Payload[]
+      }
+
+      const flattenedPayloads = helperFlatten(payloadsPerMission)
+      const customers = flattenedPayloads.map(
+        (payload: Payload) => payload?.customers
+      )
+
+      const flattenedCustomers = flattenStrArray(customers)
+      return flattenedCustomers.length
+    }, [filteredMissions]),
   }
+
 
   // ----------------------------------- //
   // ---- LAAUNCH SITE FILTER STATE ---- //
@@ -105,17 +127,83 @@ const App: FC<AppProps> = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [launchSiteOptions, setLaunchSiteOptions] = useState<string[]>([])
 
+  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
+
+  const menuOptions = {
+    settings: [
+      <div className='flex flex-row justify-between gap-x-4'>
+        <p>Light / Dark Theme</p>
+        <Switch handleClick={toggleDarkMode} text='' active={darkMode} />
+      </div>,
+      <span className='cursor-pointer' onClick={() => {}}>
+        Logout
+      </span>,
+    ],
+  }
+
+  // console.log({ paginatedLaunches, filteredMissions })
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
-        <DashboardHeader
-          header='SpaceX Mission Dashboard'
-          toggleDarkMode={toggleDarkMode}
-          darkMode={darkMode}
-          launchSiteOptions={launchSiteOptions}
-          launchSiteFilter={launchSiteFilter}
-          setLaunchSiteFilter={setLaunchSiteFilter}
-        />
+        <DashboardHeader header='SpaceX Mission Dashboard'>
+          <div className='flex flex-row gap-x-4'>
+            <MenuButton
+              active={menuOpen === 'settings'}
+              handleClick={() => {
+                const active = menuOpen === 'settings'
+                setMenuOpen(active ? '' : 'settings')
+              }}
+              className='w-40px grid place-items-center'
+              menuItems={menuOptions.settings}>
+              <Cog className={menuOpen === 'settings' ? 'stroke-white' : ''} />
+            </MenuButton>
+
+            <MenuButton
+              active={menuOpen === 'launch_site'}
+              handleClick={() => {
+                const active = menuOpen === 'launch_site'
+                setMenuOpen(active ? '' : 'launch_site')
+              }}
+              menuItems={[
+                <span
+                  className='cursor-pointer'
+                  onClick={() => {
+                    setLaunchSiteFilter('')
+                    setFilteredMissions(memoized.paginatedMissions)
+                    setMenuOpen('')
+                  }}>
+                  Clear Filter
+                </span>,
+                ...launchSiteOptions.map((opt) => (
+                  <div
+                    className='cursor-pointer'
+                    onClick={() => {
+                      // Filter Table
+                      setLaunchSiteFilter(opt as string)
+                      setFilteredMissions(memoized.paginatedMissions)
+                      setMenuOpen('')
+                    }}>
+                    {opt}
+                  </div>
+                )),
+              ]}>
+              <div className='flex justify-between px-4 gap-x-10'>
+                <span className='flex gap-x-2'>
+                  <OfficeBuilding
+                    className={menuOpen === 'launch_site' ? 'stroke-white' : ''}
+                  />
+                  {!!launchSiteFilter ? launchSiteFilter : 'Launch Site'}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    'transition-transform',
+                    menuOpen === 'launch_site' ? 'rotate-180 fill-white' : ''
+                  )}
+                />
+              </div>
+            </MenuButton>
+          </div>
+        </DashboardHeader>
 
         <div className='relative'>
           <div
@@ -154,7 +242,7 @@ const App: FC<AppProps> = () => {
                 },
                 {
                   label: 'Total Payload Customers',
-                  value: filteredPayloadCustomers.length,
+                  value: memoized.totalPayloadCustomers,
                   Icon: () => <UserCircle />,
                   linkTo: '/',
                 },
@@ -181,7 +269,6 @@ const App: FC<AppProps> = () => {
               </div>
             }>
             <TableComponent
-              filteredData={filteredDetailedLaunches}
               dynamicHeight={
                 tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-64'
               }
@@ -191,6 +278,9 @@ const App: FC<AppProps> = () => {
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
               setLaunchSiteOptions={setLaunchSiteOptions}
+              onFetchedNewData={(paginatedData) => {
+                setPaginatedLaunches(paginatedData)
+              }}
             />
           </TitleCard>
         </div>
