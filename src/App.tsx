@@ -44,9 +44,19 @@ const App: FC<AppProps> = () => {
   // ------------------------- //
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const toggleDarkMode: () => void = () => setDarkMode(!darkMode)
+
   const [tableCardExpanded, setTableCardExpanded] = useState<boolean>(false)
   const toggleTableCardExpanded: () => void = () =>
     setTableCardExpanded(!tableCardExpanded)
+
+  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
+
+  // ----------------------------------- //
+  // ---- LAAUNCH SITE FILTER STATE ---- //
+  // ----------------------------------- //
+  const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [launchSiteOptions, setLaunchSiteOptions] = useState<string[]>([])
 
   // -------------- //
   // ---- DATA ---- //
@@ -118,28 +128,6 @@ const App: FC<AppProps> = () => {
     }, [filteredMissions]),
   }
 
-  // ----------------------------------- //
-  // ---- LAAUNCH SITE FILTER STATE ---- //
-  // ----------------------------------- //
-  const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [launchSiteOptions, setLaunchSiteOptions] = useState<string[]>([])
-
-  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
-
-  const menuOptions = {
-    settings: [
-      <div className='flex flex-row justify-between gap-x-4'>
-        <p>Light / Dark Theme</p>
-        <Switch handleClick={toggleDarkMode} text='' active={darkMode} />
-      </div>,
-      <span className='cursor-pointer' onClick={() => {}}>
-        Logout
-      </span>,
-    ],
-  }
-
-  // console.log({ paginatedLaunches, filteredMissions })
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
@@ -152,7 +140,19 @@ const App: FC<AppProps> = () => {
                 setMenuOpen(active ? '' : 'settings')
               }}
               className='w-40px grid place-items-center'
-              menuItems={menuOptions.settings}>
+              menuItems={[
+                <div className='flex flex-row justify-between gap-x-4'>
+                  <p>Light / Dark Theme</p>
+                  <Switch
+                    handleClick={toggleDarkMode}
+                    text=''
+                    active={darkMode}
+                  />
+                </div>,
+                <span className='cursor-pointer' onClick={() => {}}>
+                  Logout
+                </span>,
+              ]}>
               <Cog className={menuOpen === 'settings' ? 'stroke-white' : ''} />
             </MenuButton>
 
