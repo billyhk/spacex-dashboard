@@ -158,7 +158,7 @@ const App: FC<AppProps> = () => {
                   Logout
                 </span>,
               ]}>
-              <Cog className={menuOpen === 'settings' ? 'stroke-white' : ''} />
+              <Cog className={menuOpen === 'settings' ? '!stroke-white' : ''} />
             </MenuButton>
 
             {/* Launch Site Filters */}
@@ -192,14 +192,14 @@ const App: FC<AppProps> = () => {
               <div className='flex justify-between px-4 gap-x-10'>
                 <span className='flex gap-x-2'>
                   <OfficeBuilding
-                    className={menuOpen === 'launch_site' ? 'stroke-white' : ''}
+                    className={menuOpen === 'launch_site' ? '!stroke-white' : ''}
                   />
                   {!!launchSiteFilter ? launchSiteFilter : 'Launch Site'}
                 </span>
                 <ChevronDown
                   className={cn(
                     'transition-transform',
-                    menuOpen === 'launch_site' ? 'rotate-180 fill-white' : ''
+                    menuOpen === 'launch_site' ? 'rotate-180 !fill-white' : ''
                   )}
                 />
               </div>
