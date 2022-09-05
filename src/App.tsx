@@ -303,10 +303,6 @@ const App: FC<AppProps> = () => {
               columnFilters={columnFilters}
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
-              // setLaunchSiteOptions={setLaunchSiteOptions}
-              onFetchedNewData={(paginatedData) => {
-                setPaginatedLaunches(paginatedData)
-              }}
               setPaginatedLaunches={setPaginatedLaunches}
               setPaginatedMissions={setPaginatedMissions}
             />

@@ -12,7 +12,8 @@ export interface Mission {
 }
 
 export interface MissionApiResponse {
-  data: {
-    missions: Mission[]
+  data: Mission[]
+  meta: {
+    totalRowCount: number
   }
 }

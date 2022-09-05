@@ -15,7 +15,6 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  Row,
   SortingState,
   useReactTable,
   ColumnSort,
@@ -26,9 +25,7 @@ import {
   ColumnFiltersState,
 } from '@tanstack/react-table'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useVirtual } from 'react-virtual'
 import {
-  DetailedLaunch,
   DetailedLaunchApiResponse,
   DetailedLaunchRow,
   Mission,
@@ -37,7 +34,7 @@ import {
 import cn from 'classnames'
 import Filter from './Filter'
 
-// This will act as our database
+// These will act as our databases
 import detailedLaunches from '../../datasets/detailedLaunches.json'
 import missions from '../../datasets/missions.json'
 
@@ -50,8 +47,6 @@ interface TableProps {
   columnFilters: ColumnFilter[]
   hiddenFilters?: string[]
   launchSiteFilter?: string
-  setLaunchSiteOptions?: Dispatch<SetStateAction<string[]>>
-  onFetchedNewData?: (data: any) => void
   setPaginatedMissions: Dispatch<SetStateAction<Mission[]>>
   setPaginatedLaunches: Dispatch<SetStateAction<DetailedLaunchRow[]>>
 }
@@ -65,14 +60,11 @@ const TableComponent: FC<TableProps> = ({
   columnFilters,
   hiddenFilters,
   launchSiteFilter,
-  setLaunchSiteOptions,
-  onFetchedNewData,
   setPaginatedMissions,
   setPaginatedLaunches,
 }) => {
-  //we need a reference to the scrolling element for logic down below
+  // Provide a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
-
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
     () => [
@@ -120,20 +112,26 @@ const TableComponent: FC<TableProps> = ({
     })
   }, [launchSiteFilter])
 
-  const mappedLaunches: DetailedLaunchRow[] =
-    detailedLaunches.data.launches.map((launch) => {
-      return {
-        mission_name: launch.mission_name || '',
-        date: launch.launch_date_utc || '',
-        outcome: !!launch.launch_success ? 'Success' : 'Failure',
-        rocket: launch.rocket.rocket_name || '',
-        site: launch.launch_site.site_name || '',
-        mission_id: launch.mission_id[0] || 'Not Available',
-      }
-    })
+  // ------------------------------------------------------- //
+  // FETCH DATA (2 Requests: DetailedLaunch[] and Mission[]) //
+  // ------------------------------------------------------- //
+  const fetchLaunches = (
+    start: number,
+    size: number,
+    sorting: SortingState
+  ) => {
+    const mappedLaunches: DetailedLaunchRow[] =
+      detailedLaunches.data.launches.map((launch) => {
+        return {
+          mission_name: launch.mission_name || '',
+          date: launch.launch_date_utc || '',
+          outcome: !!launch.launch_success ? 'Success' : 'Failure',
+          rocket: launch.rocket.rocket_name || '',
+          site: launch.launch_site.site_name || '',
+          mission_id: launch.mission_id[0] || 'Not Available',
+        }
+      })
 
-  //simulates a backend api
-  const fetchLaunches = (start: number, size: number, sorting: SortingState) => {
     const dbData = [...mappedLaunches]
     if (sorting.length) {
       const sort = sorting[0] as ColumnSort
@@ -156,7 +154,6 @@ const TableComponent: FC<TableProps> = ({
       },
     }
   }
-
   const fetchMissions = (
     start: number,
     size: number,
@@ -184,32 +181,32 @@ const TableComponent: FC<TableProps> = ({
     }
   }
 
-  //react-query has an useInfiniteQuery hook just for this situation!
-  const { data, fetchNextPage, isFetching, isLoading } =
-    useInfiniteQuery<DetailedLaunchApiResponse>(
-      ['table-data'], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
-      async ({ pageParam = 0 }) => {
-        const start = pageParam * fetchSize
-        const fetchedData = fetchLaunches(start, fetchSize, sorting) //pretend api call
-        return fetchedData
-      },
-      {
-        getNextPageParam: (_lastGroup, groups) => groups.length,
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-      }
-    )
-
-  //we must flatten the array of arrays from the useInfiniteQuery hook
-  const flatData: DetailedLaunchRow[] = useMemo(
-    () => data?.pages?.flatMap((page) => page.data) ?? [],
-    [data]
+  // Use react-query's useInfiniteQuery hook to handle pagination of response data (DetailedLaunch[])
+  const getDetailedLaunches = useInfiniteQuery<DetailedLaunchApiResponse>(
+    ['table-data'],
+    async ({ pageParam = 0 }) => {
+      const start = pageParam * fetchSize
+      const fetchedData = fetchLaunches(start, fetchSize, sorting) //simulate api call with /datasets/detailedLaunches.json
+      return fetchedData
+    },
+    {
+      getNextPageParam: (_lastGroup, groups) => groups.length,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   )
-  const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0
-  const totalFetched = flatData.length
 
-  //react-query has an useInfiniteQuery hook just for this situation!
-  const getMissions = useInfiniteQuery<any>(
+  //flatten the array of arrays from the useInfiniteQuery hook
+  const flatLaunchesData: DetailedLaunchRow[] = useMemo(
+    () => getDetailedLaunches.data?.pages?.flatMap((page) => page.data) ?? [],
+    [getDetailedLaunches.data]
+  )
+  const totalDBRowCount =
+    getDetailedLaunches.data?.pages?.[0]?.meta?.totalRowCount ?? 0
+  const totalFetched = flatLaunchesData.length
+
+  // Use react-query's useInfiniteQuery hook to handle pagination of response data (Mission[])
+  const getMissions = useInfiniteQuery<MissionApiResponse>(
     ['missions-data'], //adding sorting state as key causes table to reset and fetch from new beginning upon sort
     async ({ pageParam = 0 }) => {
       const start = pageParam * fetchSize
@@ -222,8 +219,12 @@ const TableComponent: FC<TableProps> = ({
       refetchOnWindowFocus: false,
     }
   )
-
-  //called on scroll and possibly on mount to fetch more data as the user scrolls and reaches bottom of table
+  // Flatten the array of arrays from the useInfiniteQuery hook
+  const flatMissionsData: Mission[] = useMemo(
+    () => getMissions.data?.pages?.flatMap((page) => page.data) ?? [],
+    [getMissions]
+  )
+  // Called on scroll and on mount to fetch more data as the user scrolls and reaches bottom of table
   const fetchMoreOnBottomReached = useCallback(
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {
@@ -231,24 +232,31 @@ const TableComponent: FC<TableProps> = ({
         //once the user has scrolled within 300px of the bottom of the table, fetch more data if there is any
         if (
           scrollHeight - scrollTop - clientHeight < 300 &&
-          !isFetching &&
+          !getDetailedLaunches.isFetching &&
           totalFetched < totalDBRowCount
         ) {
-          fetchNextPage()
-          getMissions.fetchNextPage()
+          getDetailedLaunches.fetchNextPage() // launch data used for table
+          getMissions.fetchNextPage() // missions data used for other dashboard components
         }
       }
     },
-    [fetchNextPage, getMissions.fetchNextPage, totalFetched, totalDBRowCount]
+    [getDetailedLaunches.fetchNextPage, totalFetched, totalDBRowCount]
   )
 
-  //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
+  // Check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
   useEffect(() => {
     fetchMoreOnBottomReached(tableContainerRef.current)
   }, [fetchMoreOnBottomReached])
 
+  // Bubble up request data for use in other dashboard components outside the table component
+  useEffect(() => {
+    setPaginatedLaunches(flatLaunchesData)
+    setPaginatedMissions(flatMissionsData)
+  }, [flatLaunchesData])
+
+  // Use tanstack/react-table
   const table = useReactTable({
-    data: flatData,
+    data: flatLaunchesData,
     columns,
     state: {
       columnFilters,
@@ -264,30 +272,9 @@ const TableComponent: FC<TableProps> = ({
     debugTable: true,
     autoResetAll: false,
   })
-
   const { rows } = table.getRowModel()
 
-  //Virtualizing is optional, but might be necessary if we are going to potentially have hundreds or thousands of rows
-  const rowVirtualizer = useVirtual({
-    parentRef: tableContainerRef,
-    size: rows.length,
-    overscan: 60,
-  })
-  const { virtualItems: virtualRows, totalSize } = rowVirtualizer
-  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
-  const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0
-
-  useEffect(() => {
-    setPaginatedLaunches(flatData)
-    setPaginatedMissions(
-      getMissions.data?.pages?.flatMap((page) => page.data) ?? []
-    )
-  }, [virtualRows])
-
-  if (isLoading) {
+  if (getDetailedLaunches.isLoading) {
     return <>Loading...</>
   }
   return (
@@ -299,12 +286,9 @@ const TableComponent: FC<TableProps> = ({
             column={table.getColumn(id)}
             table={table}
             className='hidden'
-            {...(id === 'site' && {
-              setLaunchSiteOptions: setLaunchSiteOptions,
-            })}
           />
         ))}
-      showing {rows.length} of {flatData.length}
+      showing {rows.length} of {flatLaunchesData.length}
       {searchKey && (
         <Filter column={table.getColumn(searchKey)} table={table} />
       )}
@@ -359,13 +343,7 @@ const TableComponent: FC<TableProps> = ({
               fetchMoreOnBottomReached(e.target as HTMLTableSectionElement)
             }
             ref={tableContainerRef as RefObject<HTMLTableSectionElement>}>
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} />
-              </tr>
-            )}
-            {virtualRows.map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<DetailedLaunchRow>
+            {rows.map((row) => {
               return (
                 <tr key={row.id} className='flex flex-row justify-between'>
                   {row.getVisibleCells().map((cell) => {
@@ -381,17 +359,14 @@ const TableComponent: FC<TableProps> = ({
                 </tr>
               )
             })}
-            {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }}></td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
-      {/* <div>
-        Fetched {flatData.length} of {totalDBRowCount} Rows.
-      </div> */}
+      {/* 
+          <div>
+            Fetched {flatLaunchesData.length} of {totalDBRowCount} Rows.
+          </div> 
+      */}
     </Fragment>
   )
 }
