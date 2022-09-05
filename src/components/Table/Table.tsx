@@ -21,7 +21,6 @@ import {
   getFilteredRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
-  ColumnFilter,
   ColumnFiltersState,
 } from '@tanstack/react-table'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -43,8 +42,6 @@ interface TableProps {
   dynamicHeight?: string
   fetchSize?: number
   searchKey?: string
-  setColumnFilters?: Dispatch<SetStateAction<ColumnFiltersState>>
-  columnFilters: ColumnFilter[]
   hiddenFilters?: string[]
   launchSiteFilter?: string
   setPaginatedMissions: Dispatch<SetStateAction<Mission[]>>
@@ -56,15 +53,16 @@ const TableComponent: FC<TableProps> = ({
   dynamicHeight,
   fetchSize = 10,
   searchKey,
-  setColumnFilters,
-  columnFilters,
   hiddenFilters,
   launchSiteFilter,
   setPaginatedMissions,
   setPaginatedLaunches,
 }) => {
+  
   // Provide a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
+  
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
     () => [

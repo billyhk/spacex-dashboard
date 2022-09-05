@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, useId, Fragment, useEffect } from 'react'
+import { FC, useMemo, useState, Fragment } from 'react'
 import cn from 'classnames'
 import {
   PageContainer,
@@ -20,27 +20,20 @@ import {
 } from './components/Icons'
 import {
   countPayloads,
-  flattenStrArray,
   getAvgPayloadMass,
+  getLaunchSiteOptions,
   getPayloadsByNationality,
+  getTotalPayloadCustomers,
   MappedPayload,
   sortByCount,
 } from './utils'
-import {
-  DetailedLaunch,
-  DetailedLaunchRow,
-  Mission,
-  Payload,
-} from './interfaces'
-import { ColumnFiltersState } from '@tanstack/react-table'
+import { DetailedLaunchRow, Mission } from './interfaces'
 import { Switch } from './components/Inputs'
 import { MenuButton } from './components/Button'
 
 interface AppProps {}
 
 const App: FC<AppProps> = () => {
-  const statCardId = useId()
-
   // ------------------------- //
   // ---- Display Toggles ---- //
   // ------------------------- //
@@ -57,11 +50,10 @@ const App: FC<AppProps> = () => {
   // ---- LAAUNCH SITE FILTER STATE ---- //
   // ----------------------------------- //
   const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  // -------------- //
-  // ---- DATA ---- //
-  // -------------- // 
+  // --------------------------------------------- //
+  // ---- Primary DATA (launches and missions)---- //
+  // --------------------------------------------- //
   const [paginatedLaunches, setPaginatedLaunches] = useState<
     DetailedLaunchRow[]
   >([])
@@ -89,22 +81,18 @@ const App: FC<AppProps> = () => {
       })
     })
     return result
-  }, [launchSiteFilter, filteredLaunches, paginatedMissions])
+  }, [filteredLaunches, paginatedMissions])
 
-  const findDuplicates = (arr: string[]) =>
-    arr.filter((item, index) => arr.indexOf(item) != index)
 
-  const launchSiteOptions = useMemo(() => {
-    const paginatedLaunchSites = paginatedLaunches.map((launch) => launch.site)
-    const deduplicated = new Set(findDuplicates(paginatedLaunchSites))
-    return Array.from(deduplicated)
-  }, [paginatedLaunches])
+  // -------------------------------------------------------------------- //
+  // ---- Secondary DATA (memoized, dependendent upon primary data ------ //
+  // -------------------------------------------------------------------- //
   interface MemoizedData {
     avgPayloadMass: number
     totalCountMissionPayloads: number
     payloadsByNationality: MappedPayload[]
-    // paginatedMissions: Mission[]
     totalPayloadCustomers: number
+    launchSiteOptions: string[]
   }
   const memoized: MemoizedData = {
     avgPayloadMass: useMemo(
@@ -122,42 +110,21 @@ const App: FC<AppProps> = () => {
           .slice(0, 5),
       [filteredMissions]
     ),
-    // paginatedMissions: useMemo(() => {
-    //   return paginatedMissions.filter((mission) => {
-    //     const paginatedLaunchMissionIds = paginatedLaunches?.map(
-    //       (launch) => launch.mission_id
-    //     )
-    //     return !!paginatedLaunchMissionIds?.find(
-    //       (launch: string | string[]) => launch === mission.id
-    //     )
-    //   })
-    // }, [paginatedLaunches, paginatedMissions]),
-    totalPayloadCustomers: useMemo(() => {
-      const payloadsPerMission = filteredMissions.map((mission: Mission) => {
-        return mission.payloads.filter((payload: Payload) => !!payload)
-      })
-      const helperFlatten = (arr: any[]): Payload[] => {
-        return arr.reduce(
-          (acc, val) =>
-            acc.concat(Array.isArray(val) ? helperFlatten(val) : val),
-          []
-        ) as Payload[]
-      }
-
-      const flattenedPayloads = helperFlatten(payloadsPerMission)
-      const customers = flattenedPayloads.map(
-        (payload: Payload) => payload?.customers
-      )
-
-      const flattenedCustomers = flattenStrArray(customers)
-      return flattenedCustomers.length
-    }, [filteredMissions]),
+    totalPayloadCustomers: useMemo(
+      () => getTotalPayloadCustomers(filteredMissions),
+      [filteredMissions]
+    ),
+    launchSiteOptions: useMemo(
+      () => getLaunchSiteOptions(paginatedLaunches),
+      [paginatedLaunches]
+    ),
   }
 
   return (
     <PageContainer darkMode={darkMode}>
       <main className='px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
+          {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
             <MenuButton
               active={menuOpen === 'settings'}
@@ -182,6 +149,7 @@ const App: FC<AppProps> = () => {
               <Cog className={menuOpen === 'settings' ? 'stroke-white' : ''} />
             </MenuButton>
 
+            {/* Launch Site Filters */}
             <MenuButton
               active={menuOpen === 'launch_site'}
               handleClick={() => {
@@ -197,7 +165,7 @@ const App: FC<AppProps> = () => {
                   }}>
                   Clear Filter
                 </span>,
-                ...launchSiteOptions.map((opt) => (
+                ...memoized.launchSiteOptions.map((opt) => (
                   <div
                     className='cursor-pointer'
                     onClick={() => {
@@ -273,7 +241,7 @@ const App: FC<AppProps> = () => {
                   linkTo: '/',
                 },
               ].map((data: StatCardProps, i) => {
-                return <StatisticCard {...data} key={`${statCardId}-${i}`} />
+                return <StatisticCard {...data} key={`statCard-${i}`} />
               })}
             </div>
           </div>
@@ -299,8 +267,6 @@ const App: FC<AppProps> = () => {
                 tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-64'
               }
               searchKey='mission_name'
-              setColumnFilters={setColumnFilters}
-              columnFilters={columnFilters}
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
               setPaginatedLaunches={setPaginatedLaunches}
