@@ -62,6 +62,7 @@ const PieChart = <T extends unknown>({
         <Tooltip
           {...(!!CustomTooltip && { content: <CustomTooltip /> })}
           wrapperStyle={{ outline: 0 }}
+          animationDuration={700}
         />
       )}
     </RechartsPie>
