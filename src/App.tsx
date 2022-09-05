@@ -34,7 +34,6 @@ import { MenuButton } from './components/Button'
 // JSON DATA
 import missions from './datasets/missions.json'
 
-
 interface AppProps {}
 
 const App: FC<AppProps> = () => {
@@ -118,7 +117,6 @@ const App: FC<AppProps> = () => {
       return flattenedCustomers.length
     }, [filteredMissions]),
   }
-
 
   // ----------------------------------- //
   // ---- LAAUNCH SITE FILTER STATE ---- //
@@ -236,7 +234,11 @@ const App: FC<AppProps> = () => {
                 },
                 {
                   label: 'Avg. Payload Mass',
-                  value: `${memoized.avgPayloadMass.toFixed(0)} kg`,
+                  value: `${
+                    !!memoized.avgPayloadMass
+                      ? memoized.avgPayloadMass.toFixed(0)
+                      : 0
+                  } kg`,
                   Icon: () => <Scale />,
                   linkTo: '/',
                 },
