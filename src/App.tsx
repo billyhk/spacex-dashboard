@@ -17,6 +17,7 @@ import {
   Cog,
   OfficeBuilding,
   ChevronDown,
+  Loading,
 } from './components/Icons'
 import {
   getAverage,
@@ -50,6 +51,7 @@ const App: FC<AppProps> = () => {
     setTableCardExpanded(!tableCardExpanded)
 
   const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
+  const [isApiLoading, setIsApiLoading] = useState<boolean>(true)
 
   // ----------------------------------- //
   // ---- LAAUNCH SITE FILTER STATE ---- //
@@ -99,9 +101,9 @@ const App: FC<AppProps> = () => {
     return mappedPayloads
   }, [filteredLaunches, paginatedMissions])
 
-  // -------------------------------------------------------------------- //
-  // ---- Secondary DATA (memoized, dependendent upon primary data ------ //
-  // -------------------------------------------------------------------- //
+  // --------------------------------------------------------------------- //
+  // ---- Secondary DATA (memoized, dependendent upon primary data) ------ //
+  // --------------------------------------------------------------------- //
   interface MemoizedData {
     payloadMasses: number[]
     payloadsByNationality: MappedPayload[]
@@ -223,7 +225,11 @@ const App: FC<AppProps> = () => {
                   </span>
                 </Fragment>
               }>
-              <PieChartWithTable data={memoized.payloadsByNationality} />
+              {isApiLoading ? (
+                <Loading />
+              ) : (
+                <PieChartWithTable data={memoized.payloadsByNationality} />
+              )}
             </TitleCard>
             {/* Stat Cards */}
             <div className='flex flex-col justify-between gap-y-1 w-full lg:w-1/2'>
@@ -251,7 +257,13 @@ const App: FC<AppProps> = () => {
                   linkTo: '/',
                 },
               ].map((data: StatCardProps, i) => {
-                return <StatisticCard {...data} key={`statCard-${i}`} />
+                return (
+                  <StatisticCard
+                    {...data}
+                    key={`statCard-${i}`}
+                    isApiLoading={isApiLoading}
+                  />
+                )
               })}
             </div>
           </div>
@@ -281,6 +293,7 @@ const App: FC<AppProps> = () => {
               launchSiteFilter={launchSiteFilter}
               setPaginatedLaunches={setPaginatedLaunches}
               setPaginatedMissions={setPaginatedMissions}
+              setIsApiLoading={setIsApiLoading}
             />
           </TitleCard>
         </section>

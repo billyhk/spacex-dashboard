@@ -46,6 +46,7 @@ interface TableProps {
   launchSiteFilter?: string
   setPaginatedMissions: Dispatch<SetStateAction<Mission[]>>
   setPaginatedLaunches: Dispatch<SetStateAction<DetailedLaunchRow[]>>
+  setIsApiLoading: Dispatch<SetStateAction<boolean>>
 }
 
 const TableComponent: FC<TableProps> = ({
@@ -57,11 +58,11 @@ const TableComponent: FC<TableProps> = ({
   launchSiteFilter,
   setPaginatedMissions,
   setPaginatedLaunches,
+  setIsApiLoading,
 }) => {
-  
   // Provide a reference to the scrolling element for logic down below
   const tableContainerRef = useRef<HTMLDivElement>(null)
-  
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo<ColumnDef<DetailedLaunchRow, any>[]>(
@@ -240,6 +241,11 @@ const TableComponent: FC<TableProps> = ({
     },
     [getDetailedLaunches.fetchNextPage, totalFetched, totalDBRowCount]
   )
+
+  // Bubble up loading state
+  useEffect(() => {
+    setIsApiLoading(getDetailedLaunches.isLoading)
+  }, [getDetailedLaunches.isLoading])
 
   // Check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
   useEffect(() => {
