@@ -30,11 +30,11 @@ import {
   Mission,
   MissionApiResponse,
 } from '../../interfaces'
+import { format } from 'date-fns'
 import { fetchLaunches, fetchMissions } from './fetchData'
 import { Arrow } from '../Icons'
 import Filter from './Filter'
 import cn from 'classnames'
-
 declare module '@tanstack/table-core' {
   interface ColumnMeta<TData extends RowData, TValue> {
     className?: string
@@ -77,7 +77,9 @@ const TableComponent: FC<TableProps> = ({
       {
         accessorKey: 'date',
         header: 'Date',
-        cell: (info) => info.getValue<Date>().toLocaleString(),
+        cell: (info) => {
+          return format(new Date(info.getValue<Date>()), "yyyy-mm-dd , hh:mm a")
+        },
       },
       {
         accessorKey: 'outcome',
@@ -86,7 +88,6 @@ const TableComponent: FC<TableProps> = ({
           className: '',
         },
         cell: (info: any) => {
-          console.log(info)
           return (
             <span
               className={cn(
@@ -271,7 +272,7 @@ const TableComponent: FC<TableProps> = ({
                             header.column.getCanSort()
                               ? 'cursor-pointer select-none'
                               : '',
-                            'font-semibold text-grey-5 dark:text-white transition-colors py-2 flex flex-row gap-x-2'
+                            'whitespace-nowrap font-semibold text-grey-5 dark:text-white transition-colors py-2 flex flex-row gap-x-2'
                           )}
                           {...{
                             onClick: header.column.getToggleSortingHandler(),
@@ -307,15 +308,15 @@ const TableComponent: FC<TableProps> = ({
               fetchMoreOnBottomReached(e.target as HTMLTableSectionElement)
             }
             ref={tableContainerRef as RefObject<HTMLTableSectionElement>}>
-            {rows.map((row) => {
+            {rows.map((row, i) => {
               return (
                 <tr key={row.id} className='flex flex-row justify-between'>
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td
                         className={cn(
-                          'w-full font-normal text-grey-5 dark:text-grey-6 py-2',
-                          'border-b-2 border-grey-secondary dark:border-black-4 transition-colors',
+                          'w-40 md:w-full font-normal text-grey-5 dark:text-grey-6 py-2 pr-2',
+                          'border-b-2 border-grey-secondary dark:border-black-4 transition-colors',                          
                           cell.column.columnDef.meta?.className
                         )}
                         key={cell.id}>
