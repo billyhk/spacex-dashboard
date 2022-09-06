@@ -289,6 +289,7 @@ const App: FC<AppProps> = () => {
                 tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-52'
               }
               searchKey='mission_name'
+              searchInputPlaceholder='Search by Mission Name'
               hiddenFilters={['site']}
               launchSiteFilter={launchSiteFilter}
               setPaginatedLaunches={setPaginatedLaunches}

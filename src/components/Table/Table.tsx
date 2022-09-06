@@ -32,7 +32,7 @@ import {
 } from '../../interfaces'
 import { format } from 'date-fns'
 import { fetchLaunches, fetchMissions } from './fetchData'
-import { Arrow } from '../Icons'
+import { Arrow, Search } from '../Icons'
 import Filter from './Filter'
 import cn from 'classnames'
 declare module '@tanstack/table-core' {
@@ -45,6 +45,7 @@ interface TableProps {
   dynamicHeight?: string
   fetchSize?: number
   searchKey?: string
+  searchInputPlaceholder?: string
   hiddenFilters?: string[]
   launchSiteFilter?: string
   setPaginatedMissions: Dispatch<SetStateAction<Mission[]>>
@@ -57,6 +58,7 @@ const TableComponent: FC<TableProps> = ({
   dynamicHeight,
   fetchSize = 10,
   searchKey,
+  searchInputPlaceholder,
   hiddenFilters,
   launchSiteFilter,
   setPaginatedMissions,
@@ -78,7 +80,7 @@ const TableComponent: FC<TableProps> = ({
         accessorKey: 'date',
         header: 'Date',
         cell: (info) => {
-          return format(new Date(info.getValue<Date>()), "yyyy-mm-dd , hh:mm a")
+          return format(new Date(info.getValue<Date>()), 'yyyy-mm-dd , hh:mm a')
         },
       },
       {
@@ -244,10 +246,24 @@ const TableComponent: FC<TableProps> = ({
             className='hidden'
           />
         ))}
-      showing {rows.length} of {flatLaunchesData.length}
       {searchKey && (
-        <Filter column={table.getColumn(searchKey)} table={table} />
+        <div className='flex flex-col gap-y-2 my-4'>
+          <span className='text-grey-5 font-normal text-xs'>
+            Displaying {rows.length} of {flatLaunchesData.length}
+          </span>
+          <div className='border-none py-2 px-4 flex flex-row items-center gap-x-4 bg-grey-secondary dark:bg-black-4 overflow-hidden rounded-md transition-colors'>
+            <Search />
+            <Filter
+              column={table.getColumn(searchKey)}
+              table={table}
+              className='w-full'
+              inputStyleClasses='bg-grey-secondary dark:bg-black-4 text-grey-5 dark:text-grey-3  transition-colors'
+              placeholder={searchInputPlaceholder ?? 'Search...'}
+            />
+          </div>
+        </div>
       )}
+
       <div
         className={cn(
           'overflow-x-auto overflow-y-hidden transition-height duration-1000',
@@ -316,7 +332,7 @@ const TableComponent: FC<TableProps> = ({
                       <td
                         className={cn(
                           'w-40 md:w-full font-normal text-grey-5 dark:text-grey-6 py-2 pr-2',
-                          'border-b-2 border-grey-secondary dark:border-black-4 transition-colors',                          
+                          'border-b-2 border-grey-secondary dark:border-black-4 transition-colors',
                           cell.column.columnDef.meta?.className
                         )}
                         key={cell.id}>

@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { Table, Column } from '@tanstack/react-table'
+import cn from 'classnames'
 
 export function DebouncedInput({
   value: initialValue,
@@ -39,12 +40,16 @@ interface TableFilterElement {
   table: Table<any>
   className?: string
   setLaunchSiteOptions?: Dispatch<SetStateAction<string[]>>
+  placeholder?: string
+  inputStyleClasses?: string
 }
 const Filter = ({
   column,
   table,
   className,
   setLaunchSiteOptions,
+  placeholder,
+  inputStyleClasses,
 }: TableFilterElement) => {
   const firstValue = table
     .getPreFilteredRowModel()
@@ -69,17 +74,19 @@ const Filter = ({
 
   return (
     <div className={className}>
-      <datalist id={column.id + 'list'}>
+      {/* <datalist id={column.id + 'list'}>
         {sortedUniqueValues.slice(0, 5000).map((value: string) => (
           <option value={value} key={value} />
         ))}
-      </datalist>
+      </datalist> */}
       <DebouncedInput
         type='text'
         value={(columnFilterValue ?? '') as string}
         onChange={(value) => column.setFilterValue(value)}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className='w-36 border shadow rounded'
+        placeholder={
+          placeholder ?? `Search... (${column.getFacetedUniqueValues().size})`
+        }
+        className={cn('w-full focus:outline-0', inputStyleClasses)}
         list={column.id + 'list'}
       />
     </div>
