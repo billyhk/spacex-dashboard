@@ -249,7 +249,7 @@ const TableComponent: FC<TableProps> = ({
         ))}
       {searchKey && (
         <div className='flex flex-col gap-y-2 my-4'>
-          <span className='text-grey-5 font-normal text-xs'>
+          <span className='text-grey-5 dark:text-grey-6 transition-colors font-normal text-xs'>
             Displaying {rows.length} of {flatLaunchesData.length}
           </span>
           <div className='border-none py-2 px-4 flex flex-row items-center gap-x-4 bg-grey-secondary dark:bg-black-4 overflow-hidden rounded-md transition-colors'>
