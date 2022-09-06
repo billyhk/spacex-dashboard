@@ -3,7 +3,7 @@ import cn from 'classnames'
 
 interface SwitchInputProps {
   className?: string
-  handleClick: () => void
+  handleClick?: () => void
   active: boolean
   text: string
 }
@@ -22,9 +22,9 @@ const Switch: FC<SwitchInputProps> = ({
   return (
     <div
       className={cn([className, 'flex'])}
-      onClick={() => {
-        handleClick()
-      }}>
+      {...(!!handleClick && {
+        onClick: handleClick,
+      })}>
       <div className='bg-grey-8 relative inline-flex items-center flex-shrink-0 h-5 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200'>
         <span
           className={cn([

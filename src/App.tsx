@@ -150,17 +150,19 @@ const App: FC<AppProps> = () => {
               }}
               className='w-40px grid place-items-center'
               menuItems={[
-                <div className='flex flex-row justify-between gap-x-4'>
+                <div
+                  className='flex flex-row justify-between gap-x-4 cursor-pointer p-4'
+                  onClick={toggleDarkMode}>
                   <p>Light / Dark Theme</p>
-                  <Switch
-                    handleClick={toggleDarkMode}
-                    text=''
-                    active={darkMode}
-                  />
+                  <Switch text='' active={darkMode} />
                 </div>,
-                <span className='cursor-pointer' onClick={() => {}}>
+                <p
+                  className='cursor-pointer p-4'
+                  onClick={() =>
+                    setMenuOpen(menuOpen === 'settings' ? '' : 'settings')
+                  }>
                   Logout
-                </span>,
+                </p>,
               ]}>
               <Cog className={menuOpen === 'settings' ? '!stroke-white' : ''} />
             </MenuButton>
@@ -173,18 +175,18 @@ const App: FC<AppProps> = () => {
                 setMenuOpen(active ? '' : 'launch_site')
               }}
               menuItems={[
-                <span
-                  className='cursor-pointer'
+                <p
+                  className='cursor-pointer p-4'
                   onClick={() => {
                     // Filter Table & Close Menu
                     setLaunchSiteFilter('')
                     setMenuOpen('')
                   }}>
                   Clear Filter
-                </span>,
+                </p>,
                 ...memoized.launchSiteOptions.map((opt) => (
                   <div
-                    className='cursor-pointer'
+                    className='cursor-pointer p-4'
                     onClick={() => {
                       setLaunchSiteFilter(opt as string)
                       setMenuOpen('')
