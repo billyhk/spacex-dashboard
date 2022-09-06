@@ -286,7 +286,7 @@ const App: FC<AppProps> = () => {
             }>
             <TableComponent
               dynamicHeight={
-                tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-64'
+                tableCardExpanded ? 'xsMaxH:h-40 h-table_height' : 'h-52'
               }
               searchKey='mission_name'
               hiddenFilters={['site']}

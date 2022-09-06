@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {
+  RowData,
   ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -30,9 +31,15 @@ import {
   MissionApiResponse,
 } from '../../interfaces'
 import { fetchLaunches, fetchMissions } from './fetchData'
+import { Arrow } from '../Icons'
 import Filter from './Filter'
 import cn from 'classnames'
 
+declare module '@tanstack/table-core' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    className?: string
+  }
+}
 interface TableProps {
   className?: string
   dynamicHeight?: string
@@ -75,6 +82,23 @@ const TableComponent: FC<TableProps> = ({
       {
         accessorKey: 'outcome',
         header: 'Outcome',
+        meta: {
+          className: '',
+        },
+        cell: (info: any) => {
+          console.log(info)
+          return (
+            <span
+              className={cn(
+                'font-semibold transition-colors',
+                info.getValue() === 'Success'
+                  ? 'text-teal dark:text-teal-secondary'
+                  : 'text-red-secondary dark:text-red-3'
+              )}>
+              {info.getValue()}
+            </span>
+          )
+        },
       },
       {
         accessorKey: 'rocket',
@@ -225,7 +249,7 @@ const TableComponent: FC<TableProps> = ({
       )}
       <div
         className={cn(
-          'overflow-x-auto overflow-y-hidden transition-height duration-700',
+          'overflow-x-auto overflow-y-hidden transition-height duration-1000',
           'text-left text-sm',
           className
         )}>
@@ -243,20 +267,29 @@ const TableComponent: FC<TableProps> = ({
                       className='w-full'>
                       {header.isPlaceholder ? null : (
                         <div
-                          {...{
-                            className: header.column.getCanSort()
+                          className={cn(
+                            header.column.getCanSort()
                               ? 'cursor-pointer select-none'
                               : '',
+                            'font-semibold text-grey-5 dark:text-white transition-colors py-2 flex flex-row gap-x-2'
+                          )}
+                          {...{
                             onClick: header.column.getToggleSortingHandler(),
                           }}>
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽',
-                          }[header.column.getIsSorted() as string] ?? null}
+                          {(header.column.getIsSorted() as string) && (
+                            <Arrow
+                              className={cn(
+                                'transition',
+                                header.column.getIsSorted() === 'asc'
+                                  ? 'rotate-90'
+                                  : '-rotate-90'
+                              )}
+                            />
+                          )}
                         </div>
                       )}
                     </th>
@@ -279,7 +312,13 @@ const TableComponent: FC<TableProps> = ({
                 <tr key={row.id} className='flex flex-row justify-between'>
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td className='w-full' key={cell.id}>
+                      <td
+                        className={cn(
+                          'w-full font-normal text-grey-5 dark:text-grey-6 py-2',
+                          'border-b-2 border-grey-secondary dark:border-black-4 transition-colors',
+                          cell.column.columnDef.meta?.className
+                        )}
+                        key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
