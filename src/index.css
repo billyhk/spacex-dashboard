@@ -9,10 +9,13 @@
 }
 
 #main_page_container {
+  max-height: fill-available;
   max-height: -webkit-fill-available;
+  max-height: -moz-available;
 }
 
 #overflowing_tbody {
+  /* overflow-y: overflow; */
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
