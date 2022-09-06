@@ -10,3 +10,12 @@ export interface Mission {
   name: string
   payloads: Payload[]
 }
+
+export interface MissionApiResponse {
+  data: Mission[]
+  meta: {
+    totalRowCount: number
+  }
+}
+
+export type MissionPayloads = (Payload | never[])[]

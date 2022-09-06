@@ -15,6 +15,7 @@ module.exports = {
           3: '#3b3b3c',
           4: '#333333',
           5: '#2d2d2d',
+          6: '#303030',
         },
         grey: {
           DEFAULT: '#f9fafb',
@@ -25,6 +26,7 @@ module.exports = {
           6: '#999999',
           7: '#555555',
           8: '#e5e7eb',
+          9: '#f1f2fa',
         },
         orange: {
           DEFAULT: '#f97316',
@@ -63,8 +65,10 @@ module.exports = {
           dark_secondary: '#242424',
         },
       },
+      screens: { xsMaxH: { raw: '(max-height: 650px)' } },
       spacing: {
         '1px': '1px',
+        '6px': '6px',
         '8px': '8px',
         '9px': '9px',
         '10px': '10px',
@@ -96,6 +100,9 @@ module.exports = {
         '155px': '155px',
         '170px': '170px',
         '207px': '207px',
+        '500px': '500px',
+        table_height: 'calc(100vh - 24rem)',
+        'table_header_row_above_overflowing-tbody': 'calc(100% - 15px)',
       },
       fontSize: {
         '10px': '10px',
@@ -103,6 +110,10 @@ module.exports = {
       },
       boxShadow: {
         button: '0 1px 2px 0 #000000',
+        bottom: ' 0px 10px 15px -15px #111',
+        bottom_darkMode: '0px 10px 15px -15px #9ca3af',
+        title_card: '0 5px 10px 0 #f1f2fa',
+        title_card_darkMode: '0 5px 10px 0 #303030',
       },
       keyframes: {
         fadein_drop: {
@@ -117,6 +128,9 @@ module.exports = {
       animation: {
         fadein_drop: 'fadein_drop 0.25s linear',
         fadeout_rise: 'fadeout_rise 0.25s linear',
+      },
+      transitionProperty: {
+        top: 'top',
       },
     },
   },

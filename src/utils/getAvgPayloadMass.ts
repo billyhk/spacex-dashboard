@@ -1,12 +1,15 @@
-import { Mission, Payload } from '../interfaces'
-import { flattenIntArray, getAverage } from '.'
+import { MissionPayloads, Payload } from '../interfaces'
+import { getAverage } from '.'
 
-export const getAvgPayloadMass = (missions: Mission[]): number => {
-  const payloadsPerMission = missions.map((mission: Mission) => {
-    return mission.payloads
-      .map((payload: Payload) => payload?.payload_mass_kg || 0)
-      .filter((mass: number) => !!mass)
-  })
+export const getAvgPayloadMass = (missionPayloads: MissionPayloads): number => {
+  const payloadMasses: number[] = missionPayloads.map(
+    (payload: never[] | Payload) => {
+      if (payload && 'payload_mass_kg' in payload) {
+        return payload.payload_mass_kg || 0
+      }
+      return 0
+    }
+  )
 
-  return getAverage(flattenIntArray(payloadsPerMission))
+  return getAverage(payloadMasses)
 }
