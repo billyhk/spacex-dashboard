@@ -36,6 +36,7 @@ import {
 import { Switch } from './components/Inputs'
 import { MenuButton } from './components/Button'
 import { Loading } from './components/Text'
+import OutsideClickHandler from 'react-outside-click-handler'
 
 interface AppProps {}
 
@@ -140,78 +141,92 @@ const App: FC<AppProps> = () => {
         ref={innerContainerRef}
         className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
-          {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
-            <MenuButton
-              active={menuOpen === 'settings'}
-              handleClick={() => {
+            {/* Settings Menu */}
+            <OutsideClickHandler
+              onOutsideClick={() => {
                 const active = menuOpen === 'settings'
-                setMenuOpen(active ? '' : 'settings')
-              }}
-              className='w-40px grid place-items-center'
-              menuItems={[
-                <div
-                  className='flex flex-row justify-between gap-x-4 cursor-pointer p-4'
-                  onClick={toggleDarkMode}>
-                  <p>Light / Dark Theme</p>
-                  <Switch text='' active={darkMode} />
-                </div>,
-                <p
-                  className='cursor-pointer p-4'
-                  onClick={() =>
-                    setMenuOpen(menuOpen === 'settings' ? '' : 'settings')
-                  }>
-                  Logout
-                </p>,
-              ]}>
-              <Cog className={menuOpen === 'settings' ? '!stroke-white' : ''} />
-            </MenuButton>
+                if (active) return setMenuOpen('')
+              }}>
+              <MenuButton
+                active={menuOpen === 'settings'}
+                handleClick={() => {
+                  const active = menuOpen === 'settings'
+                  setMenuOpen(active ? '' : 'settings')
+                }}
+                className='w-40px grid place-items-center'
+                menuItems={[
+                  <div
+                    className='flex flex-row justify-between gap-x-4 cursor-pointer p-4'
+                    onClick={toggleDarkMode}>
+                    <p>Light / Dark Theme</p>
+                    <Switch text='' active={darkMode} />
+                  </div>,
+                  <p
+                    className='cursor-pointer p-4'
+                    onClick={() =>
+                      setMenuOpen(menuOpen === 'settings' ? '' : 'settings')
+                    }>
+                    Logout
+                  </p>,
+                ]}>
+                <Cog
+                  className={menuOpen === 'settings' ? '!stroke-white' : ''}
+                />
+              </MenuButton>
+            </OutsideClickHandler>
 
             {/* Launch Site Filters */}
-            <MenuButton
-              active={menuOpen === 'launch_site'}
-              handleClick={() => {
+            <OutsideClickHandler
+              onOutsideClick={() => {
                 const active = menuOpen === 'launch_site'
-                setMenuOpen(active ? '' : 'launch_site')
-              }}
-              menuItems={[
-                <p
-                  className='cursor-pointer p-4'
-                  onClick={() => {
-                    // Filter Table & Close Menu
-                    setLaunchSiteFilter('')
-                    setMenuOpen('')
-                  }}>
-                  Clear Filter
-                </p>,
-                ...memoized.launchSiteOptions.map((opt) => (
-                  <div
+                if (active) return setMenuOpen('')
+              }}>
+              <MenuButton
+                active={menuOpen === 'launch_site'}
+                handleClick={() => {
+                  const active = menuOpen === 'launch_site'
+                  setMenuOpen(active ? '' : 'launch_site')
+                }}
+                menuItems={[
+                  <p
                     className='cursor-pointer p-4'
                     onClick={() => {
-                      setLaunchSiteFilter(opt as string)
+                      // Filter Table & Close Menu
+                      setLaunchSiteFilter('')
                       setMenuOpen('')
                     }}>
-                    {opt}
-                  </div>
-                )),
-              ]}>
-              <div className='flex justify-between px-4 gap-x-10'>
-                <span className='flex gap-x-2'>
-                  <OfficeBuilding
-                    className={
-                      menuOpen === 'launch_site' ? '!stroke-white' : ''
-                    }
+                    Clear Filter
+                  </p>,
+                  ...memoized.launchSiteOptions.map((opt) => (
+                    <div
+                      className='cursor-pointer p-4'
+                      onClick={() => {
+                        setLaunchSiteFilter(opt as string)
+                        setMenuOpen('')
+                      }}>
+                      {opt}
+                    </div>
+                  )),
+                ]}>
+                <div className='flex justify-between px-4 gap-x-10'>
+                  <span className='flex gap-x-2'>
+                    <OfficeBuilding
+                      className={
+                        menuOpen === 'launch_site' ? '!stroke-white' : ''
+                      }
+                    />
+                    {!!launchSiteFilter ? launchSiteFilter : 'Launch Site'}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'transition-transform',
+                      menuOpen === 'launch_site' ? 'rotate-180 !fill-white' : ''
+                    )}
                   />
-                  {!!launchSiteFilter ? launchSiteFilter : 'Launch Site'}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    'transition-transform',
-                    menuOpen === 'launch_site' ? 'rotate-180 !fill-white' : ''
-                  )}
-                />
-              </div>
-            </MenuButton>
+                </div>
+              </MenuButton>
+            </OutsideClickHandler>
           </div>
         </DashboardHeader>
 
