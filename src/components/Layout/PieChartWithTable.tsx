@@ -17,14 +17,16 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data, className }) => {
   return (
     <div
       className={cn(
-        'flex flex-col md:flex-row gap-4 items-center border-3',
+        'flex flex-col md:flex-row gap-y-4 gap-x-8 items-center border-3',
         className
       )}>
       {!data.length ? (
         <Fallback dataTerm='Nationality' />
       ) : (
         <Fragment>
-          <div onMouseOut={() => setActiveIndex(-1)}>
+          <div
+            onMouseOut={() => setActiveIndex(-1)}
+            className='md:w-1/4 lg:w-1/3 grid place-items-center'>
             <PieChart
               data={data}
               dataKey='count'

@@ -29,12 +29,12 @@ const PieChart = <T extends unknown>({
   CustomTooltip,
 }: PieChartProps<T>) => {
   return (
-    <RechartsPie width={170} height={170} className={className}>
+    <RechartsPie width={160} height={160} className={className}>
       <Pie
         data={data}
         cx={75}
         cy={75}
-        innerRadius={60}
+        innerRadius={64}
         outerRadius={70}
         paddingAngle={3}
         cornerRadius={100}
