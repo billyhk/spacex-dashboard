@@ -134,7 +134,7 @@ const App: FC<AppProps> = () => {
 
   return (
     <PageContainer darkMode={darkMode}>
-      <main className='px-6 md:px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
+      <main className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
           {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
@@ -212,7 +212,7 @@ const App: FC<AppProps> = () => {
         <section className='relative'>
           <div
             className={cn(
-              'flex flex-col lg:flex-row gap-4 mb-4',
+              'flex flex-col lg:flex-row gap-4',
               'transition-opacity duration-700',
               tableCardExpanded && 'opacity-0'
             )}>
@@ -273,7 +273,7 @@ const App: FC<AppProps> = () => {
           <div
             className={cn(
               'w-full mt-4 left-0 absolute transition-top duration-700 ease-out',
-              tableCardExpanded ? '-top-4' : 'top-full'
+              tableCardExpanded ? '-top-4 smMaxH:h-800px h-800px md:min-h-screen' : 'top-full h-550px'
             )}>
             <TitleCard
               title={
@@ -290,7 +290,7 @@ const App: FC<AppProps> = () => {
               <TableComponent
                 dynamicHeight={
                   tableCardExpanded
-                    ? 'xsMaxH:min-h-screen h-table_height'
+                    ? 'smMaxH:h-500px h-500px md:h-table_height'
                     : 'h-52'
                 }
                 searchKey='mission_name'
