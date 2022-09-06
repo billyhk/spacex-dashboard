@@ -272,7 +272,7 @@ const TableComponent: FC<TableProps> = ({
                             header.column.getCanSort()
                               ? 'cursor-pointer select-none'
                               : '',
-                            'whitespace-nowrap font-semibold text-grey-5 dark:text-white transition-colors py-2 flex flex-row gap-x-2'
+                            'whitespace-nowrap font-semibold text-grey-5 dark:text-white transition-colors py-3 flex flex-row gap-x-2'
                           )}
                           {...{
                             onClick: header.column.getToggleSortingHandler(),
