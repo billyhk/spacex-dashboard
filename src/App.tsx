@@ -17,7 +17,6 @@ import {
   Cog,
   OfficeBuilding,
   ChevronDown,
-  Loading,
 } from './components/Icons'
 import {
   getAverage,
@@ -36,6 +35,7 @@ import {
 } from './interfaces'
 import { Switch } from './components/Inputs'
 import { MenuButton } from './components/Button'
+import { Loading } from './components/Text'
 
 interface AppProps {}
 

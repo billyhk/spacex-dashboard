@@ -33,6 +33,7 @@ import {
 import { format } from 'date-fns'
 import { fetchLaunches, fetchMissions } from './fetchData'
 import { Arrow, Search } from '../Icons'
+import { Fallback } from '../Text'
 import Filter from './Filter'
 import cn from 'classnames'
 declare module '@tanstack/table-core' {
@@ -264,11 +265,7 @@ const TableComponent: FC<TableProps> = ({
         </div>
       )}
 
-      {!rows.length && (
-        <span className='text-red-3 font-semibold'>
-          There is no Launch data to display for your current filters.
-        </span>
-      )}
+      {!rows.length && <Fallback dataTerm='Launch' />}
 
       <div
         className={cn(

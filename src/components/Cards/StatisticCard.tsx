@@ -1,5 +1,6 @@
 import { FC } from 'react'
-import { ChevronRight, Loading } from '../Icons'
+import { ChevronRight } from '../Icons'
+import { Loading } from '../Text'
 
 export interface StatCardProps {
   label: string

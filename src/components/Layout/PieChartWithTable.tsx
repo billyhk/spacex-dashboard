@@ -2,6 +2,7 @@ import { FC, Fragment, useState } from 'react'
 import { MappedPayload } from '../../utils'
 import { PieChart } from '../Chart'
 import { CustomTooltip } from '../Chart/CustomTooltip'
+import { Fallback } from '../Text'
 import cn from 'classnames'
 
 const COLORS = ['#f97316', '#b91c1c', '#14b8a6', '#3b82f6', '#6d28d9']
@@ -17,9 +18,7 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data, className }) => {
     <div
       className={cn('flex flex-col md:flex-row gap-4 items-center', className)}>
       {!data.length ? (
-        <span className='text-red-3 font-semibold'>
-          There is no Nationality data to display for your current filters.
-        </span>
+        <Fallback dataTerm='Nationality' />
       ) : (
         <Fragment>
           <PieChart
