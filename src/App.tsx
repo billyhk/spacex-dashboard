@@ -46,12 +46,13 @@ const App: FC<AppProps> = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false)
   const toggleDarkMode: () => void = () => setDarkMode(!darkMode)
 
+  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
+  const [isApiLoading, setIsApiLoading] = useState<boolean>(true)
+
   const [tableCardExpanded, setTableCardExpanded] = useState<boolean>(false)
   const toggleTableCardExpanded: () => void = () =>
     setTableCardExpanded(!tableCardExpanded)
-
-  const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
-  const [isApiLoading, setIsApiLoading] = useState<boolean>(true)
+  // Use ref to scroll to top when user clicks button to expand table card
   const innerContainerRef = useRef<HTMLDivElement>(null)
 
   // ---------------------------------- //
@@ -135,7 +136,9 @@ const App: FC<AppProps> = () => {
 
   return (
     <PageContainer darkMode={darkMode}>
-      <main ref={innerContainerRef} className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
+      <main
+        ref={innerContainerRef}
+        className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
           {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
