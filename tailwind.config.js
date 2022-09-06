@@ -111,7 +111,7 @@ module.exports = {
       boxShadow: {
         button: '0 1px 2px 0 #000000',
         bottom: ' 0px 10px 15px -15px #111',
-        bottom_darkMode: '0px 10px 15px -15px #fff',
+        bottom_darkMode: '0px 10px 15px -15px #9ca3af',
         title_card: '0 5px 10px 0 #f1f2fa',
         title_card_darkMode: '0 5px 10px 0 #303030',
       },

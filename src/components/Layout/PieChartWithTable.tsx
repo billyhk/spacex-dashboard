@@ -16,7 +16,7 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data, className }) => {
   return (
     <div className={cn('flex flex-col md:flex-row gap-4 items-center', className)}>
       {!data.length ? (
-        <span className='text-red-3 font-semibold '>There is no Nationality data to display for your current filters.</span>
+        <span className='text-red-3 font-semibold'>There is no Nationality data to display for your current filters.</span>
       ) : (
         <Fragment>
           <PieChart
@@ -37,9 +37,11 @@ const PieChartWithTable: FC<PieChartWithTableProps> = ({ data, className }) => {
               return (
                 <div
                   key={i}
-                  className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4 hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors'
-                  onMouseEnter={() => setActiveIndex(i)}
-                  onMouseLeave={() => setActiveIndex(-1)}>
+                  className='grid grid-cols-2 gap-x-4 text-sm font-medium border-b-2 border-grey-secondary py-2 y-2 dark:border-black-4'
+                  // hover:border-grey-4 hover:shadow-bottom dark:hover:shadow-bottom_darkMode transition-colors
+                  // onMouseEnter={() => setActiveIndex(i)}
+                  // onMouseLeave={() => setActiveIndex(-1)}
+                >
                   <div className='flex flex-row gap-x-2 items-center'>
                     <span
                       style={{

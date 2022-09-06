@@ -264,10 +264,17 @@ const TableComponent: FC<TableProps> = ({
         </div>
       )}
 
+      {!rows.length && (
+        <span className='text-red-3 font-semibold'>
+          There is no Launch data to display for your current filters.
+        </span>
+      )}
+
       <div
         className={cn(
           'overflow-x-auto overflow-y-hidden transition-height duration-1000',
           'text-left text-sm',
+          !rows.length ? 'hidden' : '',
           className
         )}>
         <table className='w-full'>

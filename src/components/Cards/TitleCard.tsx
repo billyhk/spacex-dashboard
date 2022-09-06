@@ -9,8 +9,8 @@ interface TitleCardProps {
 
 const TitleCard: FC<TitleCardProps> = ({ title, children, className }) => {
   return (
-    <div className={cn(className, 'shadow-lg')}>
-      <div className='border rounded-lg overflow-hidden w-full bg-white dark:bg-black-3 border-0 transition'>
+    <div className={cn(className, '')}>
+      <div className='w-full bg-white dark:bg-black-3 border-0 transition rounded-lg shadow-title_card dark:shadow-title_card_darkMode'>
         <h2 className='p-4 w-full border-b-4 border-grey-secondary dark:border-black-4 text-lg text-green-dark dark:text-white font-bold flex items-center transition-colors'>
           {title}
         </h2>
