@@ -17,7 +17,6 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
-  ColumnSort,
   getFilteredRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -30,12 +29,9 @@ import {
   Mission,
   MissionApiResponse,
 } from '../../interfaces'
-import cn from 'classnames'
+import { fetchLaunches, fetchMissions } from './fetchData'
 import Filter from './Filter'
-
-// These will act as our databases
-import detailedLaunches from '../../datasets/detailedLaunches.json'
-import missions from '../../datasets/missions.json'
+import cn from 'classnames'
 
 interface TableProps {
   className?: string
@@ -111,81 +107,12 @@ const TableComponent: FC<TableProps> = ({
     })
   }, [launchSiteFilter])
 
-  // ------------------------------------------------------- //
-  // FETCH DATA (2 Requests: Detailed-Launches and Missions) //
-  // ------------------------------------------------------- //
-  const fetchLaunches = (
-    start: number,
-    size: number,
-    sorting: SortingState
-  ) => {
-    const mappedLaunches: DetailedLaunchRow[] =
-      detailedLaunches.data.launches.map((launch) => {
-        return {
-          mission_name: launch.mission_name || '',
-          date: launch.launch_date_utc || '',
-          outcome: !!launch.launch_success ? 'Success' : 'Failure',
-          rocket: launch.rocket.rocket_name || '',
-          site: launch.launch_site.site_name || '',
-          mission_id: launch.mission_id[0] || 'Not Available',
-        }
-      })
-
-    const dbData = [...mappedLaunches]
-    if (sorting.length) {
-      const sort = sorting[0] as ColumnSort
-      const { id, desc } = sort as {
-        id: keyof DetailedLaunchRow
-        desc: boolean
-      }
-      dbData.sort((a, b) => {
-        if (desc) {
-          return a[id] < b[id] ? 1 : -1
-        }
-        return a[id] > b[id] ? 1 : -1
-      })
-    }
-
-    return {
-      data: dbData.slice(start, start + size),
-      meta: {
-        totalRowCount: dbData.length,
-      },
-    }
-  }
-  const fetchMissions = (
-    start: number,
-    size: number,
-    sorting: SortingState
-  ) => {
-    const dbData = [...missions.data.missions]
-    if (sorting.length) {
-      const sort = sorting[0] as ColumnSort
-      const { id, desc } = sort as {
-        id: keyof Mission
-        desc: boolean
-      }
-      dbData.sort((a, b) => {
-        if (desc) {
-          return a[id] < b[id] ? 1 : -1
-        }
-        return a[id] > b[id] ? 1 : -1
-      })
-    }
-    return {
-      data: dbData.slice(start, start + size),
-      meta: {
-        totalRowCount: dbData.length,
-      },
-    }
-  }
-
   // Use react-query's useInfiniteQuery hook to handle pagination of response data (DetailedLaunch[])
   const getDetailedLaunches = useInfiniteQuery<DetailedLaunchApiResponse>(
     ['table-data'],
     async ({ pageParam = 0 }) => {
       const start = pageParam * fetchSize
-      const fetchedData = fetchLaunches(start, fetchSize, sorting) //simulate api call with /datasets/detailedLaunches.json
+      const fetchedData = fetchLaunches(start, fetchSize, sorting) // Simulate api call with /datasets/detailedLaunches.json
       return fetchedData
     },
     {
@@ -209,7 +136,7 @@ const TableComponent: FC<TableProps> = ({
     ['missions-data'],
     async ({ pageParam = 0 }) => {
       const start = pageParam * fetchSize
-      const fetchedMissions = fetchMissions(start, fetchSize, sorting) //simulate api call with /datasets/missions.json
+      const fetchedMissions = fetchMissions(start, fetchSize, sorting) // Simulate api call with /datasets/missions.json
       return fetchedMissions
     },
     {
