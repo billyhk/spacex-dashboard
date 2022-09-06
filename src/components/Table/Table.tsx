@@ -323,8 +323,9 @@ const TableComponent: FC<TableProps> = ({
             ))}
           </thead>
           <tbody
+            id='overflowing_tbody'
             className={cn(
-              'block overflow-y-scroll transition-height duration-700',
+              'block transition-height duration-700 overflow-y-scroll',
               dynamicHeight
             )}
             onScroll={(e) =>

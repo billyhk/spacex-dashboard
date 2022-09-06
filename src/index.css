@@ -11,3 +11,8 @@
 #main_page_container {
   max-height: -webkit-fill-available;
 }
+
+#overflowing_tbody {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
