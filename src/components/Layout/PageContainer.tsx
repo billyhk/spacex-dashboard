@@ -14,7 +14,7 @@ const PageContainer: FC<PageContainerProps> = ({
 }) => {
   return (
     <div
-    id='main_page_container'
+      id='main_page_container'
       className={cn(
         'flex overflow-hidden h-screen',
         darkMode && 'dark',
