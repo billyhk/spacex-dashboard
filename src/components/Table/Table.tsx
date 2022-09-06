@@ -81,7 +81,7 @@ const TableComponent: FC<TableProps> = ({
         accessorKey: 'date',
         header: 'Date',
         cell: (info) => {
-          return format(new Date(info.getValue<Date>()), 'yyyy-mm-dd , hh:mm a')
+          return format(new Date(info.getValue<Date>()), 'yyyy-MM-dd , hh:mm a')
         },
       },
       {
