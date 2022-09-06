@@ -134,7 +134,7 @@ const App: FC<AppProps> = () => {
 
   return (
     <PageContainer darkMode={darkMode}>
-      <main className='px-4 md:px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
+      <main className='px-6 md:px-10 min-h-screen max-h-screen dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
           {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
@@ -192,7 +192,9 @@ const App: FC<AppProps> = () => {
               <div className='flex justify-between px-4 gap-x-10'>
                 <span className='flex gap-x-2'>
                   <OfficeBuilding
-                    className={menuOpen === 'launch_site' ? '!stroke-white' : ''}
+                    className={
+                      menuOpen === 'launch_site' ? '!stroke-white' : ''
+                    }
                   />
                   {!!launchSiteFilter ? launchSiteFilter : 'Launch Site'}
                 </span>
@@ -216,7 +218,7 @@ const App: FC<AppProps> = () => {
             )}>
             {/* Pie Chart */}
             <TitleCard
-              className='w-full lg:w-1/2 transition-opacity'
+              className='w-full lg:w-1/2'
               title={
                 <Fragment>
                   <span>Payload Count By Nationality</span>
@@ -268,35 +270,39 @@ const App: FC<AppProps> = () => {
             </div>
           </div>
           {/* Table */}
-          <TitleCard
+          <div
             className={cn(
-              'w-full mt-4 left-0 absolute overflow-auto transition-top duration-700 ease-out',
+              'w-full mt-4 left-0 absolute transition-top duration-700 ease-out',
               tableCardExpanded ? '-top-4' : 'top-full'
-            )}
-            title={
-              <div className='w-full flex justify-between items-center'>
-                <span>SpaceX Launch Data</span>
-                <span
-                  className='cursor-pointer'
-                  title='Expand Table'
-                  onClick={toggleTableCardExpanded}>
-                  <ArrowsExpand />
-                </span>
-              </div>
-            }>
-            <TableComponent
-              dynamicHeight={
-                tableCardExpanded ? 'xsMaxH:h-40 __h-full h-table_height' : 'h-52'
-              }
-              searchKey='mission_name'
-              searchInputPlaceholder='Search by Mission Name'
-              hiddenFilters={['site']}
-              launchSiteFilter={launchSiteFilter}
-              setPaginatedLaunches={setPaginatedLaunches}
-              setPaginatedMissions={setPaginatedMissions}
-              setIsApiLoading={setIsApiLoading}
-            />
-          </TitleCard>
+            )}>
+            <TitleCard
+              title={
+                <div className='w-full flex justify-between items-center'>
+                  <span>SpaceX Launch Data</span>
+                  <span
+                    className='cursor-pointer'
+                    title='Expand Table'
+                    onClick={toggleTableCardExpanded}>
+                    <ArrowsExpand />
+                  </span>
+                </div>
+              }>
+              <TableComponent
+                dynamicHeight={
+                  tableCardExpanded
+                    ? 'xsMaxH:min-h-screen h-table_height'
+                    : 'h-52'
+                }
+                searchKey='mission_name'
+                searchInputPlaceholder='Search by Mission Name'
+                hiddenFilters={['site']}
+                launchSiteFilter={launchSiteFilter}
+                setPaginatedLaunches={setPaginatedLaunches}
+                setPaginatedMissions={setPaginatedMissions}
+                setIsApiLoading={setIsApiLoading}
+              />
+            </TitleCard>
+          </div>
         </section>
       </main>
     </PageContainer>

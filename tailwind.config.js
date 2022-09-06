@@ -65,7 +65,7 @@ module.exports = {
           dark_secondary: '#242424',
         },
       },
-      screens: { xsMaxH: { raw: '(max-height: 480px)' } },
+      screens: { xsMaxH: { raw: '(max-height: 650px)' } },
       spacing: {
         '1px': '1px',
         '6px': '6px',
