@@ -270,7 +270,7 @@ const App: FC<AppProps> = () => {
           {/* Table */}
           <TitleCard
             className={cn(
-              'w-full mt-4 left-0 absolute transition-top duration-700 overflow-auto',
+              'w-full mt-4 left-0 absolute overflow-auto transition-top duration-700 ease-out',
               tableCardExpanded ? '-top-4' : 'top-full'
             )}
             title={
