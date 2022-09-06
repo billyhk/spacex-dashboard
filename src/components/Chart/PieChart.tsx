@@ -28,7 +28,6 @@ const PieChart = <T extends unknown>({
   setActiveIndex,
   CustomTooltip,
 }: PieChartProps<T>) => {
-
   return (
     <RechartsPie width={170} height={170} className={className}>
       <Pie
@@ -47,7 +46,6 @@ const PieChart = <T extends unknown>({
             stroke={colors[index % colors.length]}
             {...(setActiveIndex && {
               onMouseEnter: () => setActiveIndex(index),
-              onMouseLeave: () => setActiveIndex(-1),
               style: {
                 ...(index === activeIndex && {
                   filter: `drop-shadow(0 0 3px ${
@@ -59,7 +57,7 @@ const PieChart = <T extends unknown>({
           />
         ))}
       </Pie>
-      {showTooltip && (
+      {showTooltip && activeIndex !== -1 && (
         <Tooltip
           {...(!!CustomTooltip && { content: <CustomTooltip /> })}
           wrapperStyle={{ outline: 0 }}
