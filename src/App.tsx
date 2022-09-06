@@ -1,4 +1,4 @@
-import { FC, useMemo, useState, Fragment } from 'react'
+import { FC, useMemo, useState, Fragment, useRef } from 'react'
 import cn from 'classnames'
 import {
   PageContainer,
@@ -52,10 +52,11 @@ const App: FC<AppProps> = () => {
 
   const [menuOpen, setMenuOpen] = useState<'settings' | 'launch_site' | ''>('')
   const [isApiLoading, setIsApiLoading] = useState<boolean>(true)
+  const innerContainerRef = useRef<HTMLDivElement>(null)
 
-  // ----------------------------------- //
-  // ---- LAAUNCH SITE FILTER STATE ---- //
-  // ----------------------------------- //
+  // ---------------------------------- //
+  // ---- LAUNCH SITE FILTER STATE ---- //
+  // ---------------------------------- //
   const [launchSiteFilter, setLaunchSiteFilter] = useState<string>('')
 
   // --------------------------------------------- //
@@ -134,7 +135,7 @@ const App: FC<AppProps> = () => {
 
   return (
     <PageContainer darkMode={darkMode}>
-      <main className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
+      <main ref={innerContainerRef} className='px-8 md:px-10 dark:bg-black-4 bg-white-lightMode_gradient w-full overflow-y-auto transition-colors'>
         <DashboardHeader header='SpaceX Mission Dashboard'>
           {/* Settings Menu */}
           <div className='flex flex-row gap-x-4'>
@@ -273,7 +274,9 @@ const App: FC<AppProps> = () => {
           <div
             className={cn(
               'w-full mt-4 left-0 absolute transition-top duration-700 ease-out',
-              tableCardExpanded ? '-top-4 smMaxH:h-800px h-800px md:min-h-screen' : 'top-full h-550px'
+              tableCardExpanded
+                ? '-top-4 smMaxH:h-800px h-800px md:min-h-screen'
+                : 'top-full h-550px'
             )}>
             <TitleCard
               title={
@@ -282,7 +285,16 @@ const App: FC<AppProps> = () => {
                   <span
                     className='cursor-pointer'
                     title='Expand Table'
-                    onClick={toggleTableCardExpanded}>
+                    onClick={() => {
+                      if (!tableCardExpanded && !!innerContainerRef.current) {
+                        innerContainerRef.current.scrollTo({
+                          top: 0,
+                          behavior: 'smooth',
+                        })
+                      }
+
+                      toggleTableCardExpanded()
+                    }}>
                     <ArrowsExpand />
                   </span>
                 </div>
